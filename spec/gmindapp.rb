@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Gmindapp do
   before(:each) do
-    PrivatePub.reset_config
+    # Gmindapp.reset_config
   end
 
   it "defaults server to nil" do

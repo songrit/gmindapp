@@ -1,28 +1,19 @@
-# Private Pub
+# Gmindapp
 
-Private Pub is a Ruby gem for use with Rails to publish and subscribe to messages through [Faye](http://faye.jcoglan.com/). It allows you to easily provide real-time updates through an open socket without tying up a Rails process. All channels are private so users can only listen to events you subscribe them to.
-
-Watch [RailsCasts Episode 316](http://railscasts.com/episodes/316-private-pub) for a demonstration of Private Pub.
-
+Gmindapp is a Ruby gem for use with Rails to generate application skeleton from mind [map](http://freemind.sourceforge.net/wiki/index.php/Main_Page).
 
 ## Setup
 
 Add the gem to your Gemfile and run the `bundle` command to install it.
 
 ```ruby
-gem "private_pub"
+gem "gmindapp"
 ```
 
 Run the generator to create the initial files.
 
 ```
-rails g private_pub:install
-```
-
-Next, start up Faye using the rackup file that was generated.
-
-```
-rackup private_pub.ru -s thin -E production
+rails g gmindapp:install
 ```
 
 **In Rails 3.1** add the JavaScript file to your application.js file manifest.
