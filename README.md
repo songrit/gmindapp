@@ -1,6 +1,8 @@
+# **** <font color="red">Under Development - Do not use</font> ****
+
 # Gmindapp
 
-Gmindapp is a Ruby gem for use with Rails to generate application skeleton from mind [map](http://freemind.sourceforge.net/wiki/index.php/Main_Page).
+Gmindapp is a Ruby gem for use with Rails to generate application skeleton from [mind map](http://freemind.sourceforge.net/wiki/index.php/Main_Page).
 
 ## Setup
 
@@ -13,25 +15,17 @@ gem "gmindapp"
 Run the generator to create the initial files.
 
 ```
-rails g gmindapp:install
+rails g gmindapp:app
 ```
 
-**In Rails 3.1** add the JavaScript file to your application.js file manifest.
-
-```javascript
-//= require private_pub
-```
-
-**In Rails 3.0** add the generated private_pub.js file to your layout.
-
-```rhtml
-<%= javascript_include_tag "private_pub" %>
-```
-
-It's not necessary to include faye.js since that will be handled automatically for you.
-
+This will create index.mm in your Rails application
 
 ## Usage
+
+
+Every time you change index.mm, need to issue `rake gmindapp:update` to update application code.
+
+
 
 Use the `subscribe_to` helper method on any page to subscribe to a channel.
 
