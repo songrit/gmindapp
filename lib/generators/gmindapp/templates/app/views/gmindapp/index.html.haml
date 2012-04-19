@@ -1,0 +1,24 @@
+!!! 5
+%html
+  %head
+    %meta(name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1")
+    = stylesheet_link_tag "application"
+  %body
+    = render :partial => "menu"
+
+    %div{"data-id" => "main", "data-role" => "panel", "data-backbtn"=>"false"}
+      - if login?
+        = render :partial => "pending_home"
+      = render :partial => "about"
+      = render :partial => "static"
+    = javascript_include_tag "application"
+
+:javascript
+  $('div').live('pagehide', function(e,ui) {
+    var page = $(e.target);
+    if(page.attr('data-cache') == 'never') {
+      page.remove();
+    };
+  });
+  
+= handle_gma_notice

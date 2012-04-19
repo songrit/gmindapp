@@ -1,0 +1,32 @@
+<% if login? %>
+  <div id="user" style="color:#0063DC; margin:5px;">
+    <% user= GmaUser.find(session[:user_id]) %>
+    <%= align_text(user.full_name) %>
+    <%= link_to image_tag("logout.png", :alt=>"log out", :title=>"log out"), {:controller=>"users", :action=>"logout"} %>
+  </div>
+  <div id="check_status">
+    <% form_tag(:controller=>"main", :action => "status") do %>
+      <%= text_field_tag "id", nil,:style=>"width:80px;" %><br/>
+      <%= submit_tag "ตรวจสอบสถานะ" %>
+    <% end %>
+  </div>
+<% else %>
+  <div style="color:#0063DC; margin:5px; padding-top: 15px;">
+    <% form_tag :controller=>"users", :action=>"login" do %>
+      <table id="login" style="margin-top:-15px;">
+        <tr>
+          <td>รหัสผู้ใช้:</td>
+          <td><%= text_field_tag :login, nil, :style=>"width:100px;" %></td>
+        </tr>
+        <tr>
+          <td>รหัสผ่าน:</td>
+          <td>
+            <%= password_field_tag :password, nil, :style=>"width:100px;" %>
+            <%= image_submit_tag "play.gif", :title=>"login", :style=>"position:relative; top:4px;" %>
+          </td>
+        </tr>
+      </table>
+    <% end %>
+    <%= link_to "ขึ้นทะเบียนผู้ใช้ใหม่", :controller=>"users", :action=>"new" %>
+  </div>
+<% end %>

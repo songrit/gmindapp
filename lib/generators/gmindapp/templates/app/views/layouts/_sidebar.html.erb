@@ -1,0 +1,34 @@
+<div id="sidebar" data-context="a#default" data-hash="crumbs" data-id="menu" data-role="panel">
+  <% if gma_module %>
+    <div id="sidebar_menu">
+      <% gma_module.gma_services.each do |s| %>
+        <% next unless s.listed %>
+        <% xml= REXML::Document.new(s.xml).root %>
+        <% unless s.rule.blank? %>
+          <% next if (!eval(s.rule)) %>
+        <% end %>
+        <% unless s.role.blank? %>
+          <% next unless current_user.role.upcase.split(',').include?(s.role.upcase) %>
+        <% end %>
+        <% confirm= get_option_xml("confirm", xml) %>
+        <% confirm_hash = confirm ? {:confirm=> confirm.to_s=='true' ? "Are you sure ?" : confirm} : {} %>
+        <% if s.code.downcase=="link" %>
+          <% name, link = s.name.split(":") %>
+          <ul><li><%= link_to name, link, confirm_hash %></li></ul>
+        <% else %>
+          <ul><li><%= link_to s.name, "/run/#{s.module}/#{s.code}", confirm_hash %></li></ul>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+  <% if home_page? && false %>
+    <div class="featured" style="background-color:#B9FABE;">
+      <h4>ข่าว อปท.</h4>
+      <% @news.each do |n| %>
+        <li><%= a2waypoint n.subject %></li>
+      <% end %>
+    </div>
+  <% end %>
+  <!--iframe src="http://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FElocal%2F271511496211344&amp;width=292&amp;colorscheme=light&amp;show_faces=false&amp;border_color&amp;stream=false&amp;header=false&amp;height=62" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:292px; height:62px;" allowTransparency="true"></iframe-->
+</div>
+

@@ -1,0 +1,22 @@
+#about{"data-role" => "page"}
+  %div{"data-role" => "header" , "data-backbtn"=>"false"}
+    %h1 GMINDAPP
+  %div{"data-role" => "content"}
+    %div(style="text-align:center")
+      = image_tag "logo_gmindapp.png"
+    
+    %h2 Requirements
+    %ul
+      %li Rails 2.3.10
+      %li Rubygems 1.5.2
+    %h2 Installation
+    %ul
+      %li unzip this template and use it as a starting point for new Rails application
+      %li edit config/database.yml
+      %li edit public/index.mm
+      %li rake db:create
+      %li rake db:migrate
+      %li rake db:seed
+      %li start webrick server
+      %li=  'access '+link_to('http://localhost:3000/gma/update_app')
+      %li edit app/controllers and app/views

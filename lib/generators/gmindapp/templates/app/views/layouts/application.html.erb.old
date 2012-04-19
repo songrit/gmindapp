@@ -1,0 +1,84 @@
+<% 
+@org= Org.last
+#@title = "#{@org.otype}#{@org.name}"
+@title = "ระบบสารสนเทศ อปท."
+@amodules= [] # authorized modules
+@gma_modules= GmaModule.all(:order=>"seq").each do |m|
+  next unless (m.starter || licensed?)
+  next if (m.code=='starter')
+  if m.role
+    if current_user.role
+      @amodules << m if current_user.role.upcase.split(',').include?(m.role.upcase)
+    end
+  else
+    @amodules << m
+  end
+end
+# determine existing module
+if params[:module]
+  gma_module= GmaModule.find_by_code params[:module]
+  session[:module] = params[:module]
+elsif session[:module]
+  gma_module= GmaModule.find_by_code session[:module]
+else
+  # find first authorized module
+  @gma_modules.each do |m|
+    gma_module= m
+    break if m.role.blank?
+    if current_user.role
+      break if current_user.role.to_s.upcase.split(',').include?(m.role.upcase)
+    end
+  end
+end
+if gma_module && gma_module.role
+  gma_module= nil unless current_user.role.to_s.upcase.split(',').include?(gma_module.role.upcase)
+end
+%>
+<!DOCTYPE html>
+<html>
+  <%= render :partial => "layouts/head" %>
+  <body>
+    <div id="header" style="height:100px;">
+      <div style="float:right; color:#1C2795;">
+        <%= render :partial => "layouts/login" %>
+      </div>
+      <div id="logo" style="padding:5px 0 0 20px;">
+        <a href="/">
+            <%= image_tag Org.logo, :style=>'float:left;margin-top:-5px;' %>
+            <div class="title" style="text-align:center;">
+              <%= @title %>
+          </div>
+        </a>
+      </div>
+      <div id="search">
+        <% @search = GmaSearch.new %>
+        <% form_for(@search, :url => { :controller=>"main", :action => "search" }) do |f| %>
+          <%= f.text_field :q, :style=>"width:320px;" %>
+          <%= f.submit "ค้นหา" %>
+        <% end %>
+      </div>
+      <% if @amodules.size > 0 %>
+        <%= render :partial => "layouts/modules", :object => @amodules, :locals=>{:gma_module=>gma_module}  %>
+      <% end %>
+    </div>
+    <div id="content">
+      <%= render :partial => "layouts/sidebar", :locals=>{:gma_module=>gma_module} %>
+      <div id="contentmiddle">
+        <div id="notice"><%= display_notices %></div>
+        <div id="notice"><%= flash[:notice] %></div>
+        <div id="middlespace"><%= yield %></div>
+      </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div id="footer">
+      <div id="copyright">
+        <%= link_to "ระบบสารสนเทศบูรณาการองค์กรปกครองส่วนท้องถิ่น (ELOCAL)", "http://www.facebook.com/pages/Elocal/271511496211344", :target=>'_blank' %>
+      </div>
+    </div>
+  </body>
+</html>
+<script type='text/javascript'>
+  $(function() {
+    $('#contentmiddle').css('width',window.innerWidth-260); 
+  })
+</script>

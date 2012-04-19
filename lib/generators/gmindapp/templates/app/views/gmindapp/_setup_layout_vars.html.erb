@@ -1,0 +1,31 @@
+<%
+  @amodules= [] # authorized modules
+  @gma_modules= GmaModule.all.order("seq").each do |m|
+    if m.role
+      if current_user.role
+        @amodules << m if current_user.role.upcase.split(',').include?(m.role.upcase)
+      end
+    else
+      @amodules << m
+    end
+  end
+  # determine existing module
+  if params[:module]
+    @gma_module= GmaModule.find_by_code params[:module]
+    session[:module] = params[:module]
+  elsif session[:module]
+    @gma_module= GmaModule.find_by_code session[:module]
+  else
+    # find first authorized module
+    @gma_modules.each do |m|
+      @gma_module= m
+      break if m.role.blank?
+      if current_user.role
+        break if current_user.role.to_s.upcase.split(',').include?(m.role.upcase)
+      end
+    end
+  end
+  if @gma_module && @gma_module.role
+    @gma_module= nil unless current_user.role.to_s.upcase.split(',').include?(@gma_module.role.upcase)
+  end
+%>

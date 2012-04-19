@@ -1,0 +1,31 @@
+<% @gma_module.gma_services.each do |s| %>
+  <% next unless s.listed %>
+  <% if s.code.downcase=="link" %>
+    <% name, link = s.name.split(":") %>
+    <ul><li><%= link_to name, link %></li></ul>
+  <% else %>
+    <% if s.code=="edit" %>
+      <% if @waypoint && (@waypoint.public? || @waypoint.owner==current_user) %>
+        <ul><li><%= link_to s.name, "/run/#{s.module}/#{s.code}/#{@waypoint.id}?return=/#{@waypoint.code}" %></li></ul>
+      <% end %>
+    <% elsif s.code=="delete" %>
+      <% if login? && @waypoint && @waypoint.owner==current_user %>
+        <ul><li><%= link_to s.name, "/run/#{s.module}/#{s.code}/#{@waypoint.id}" %></li></ul>
+      <% end %>
+    <% elsif s.code=="take_ownership" %>
+      <% if login? && @waypoint && @waypoint.public? %>
+        <ul><li><%= link_to s.name, "/run/#{s.module}/#{s.code}/#{@waypoint.id}?return=/#{@waypoint.code}" %></li></ul>
+      <% end %>
+    <% elsif s.code=="release_ownership" %>
+      <% if @waypoint && @waypoint.owner==current_user %>
+        <ul><li><%= link_to s.name, "/run/#{s.module}/#{s.code}/#{@waypoint.id}?return=/#{@waypoint.code}" %></li></ul>
+      <% end %>
+    <% elsif s.code=="pwd" %>
+      <% if login? %>
+        <ul><li><%= link_to s.name, "/run/#{s.module}/#{s.code}" %></li></ul>
+      <% end %>
+    <% else %>
+      <ul><li><%= link_to s.name, "/run/#{s.module}/#{s.code}" %></li></ul>
+    <% end %>
+  <% end %>
+<% end %>
