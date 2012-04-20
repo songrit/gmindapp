@@ -57,6 +57,7 @@ module Gmindapp
         initializer "gmindapp.rb" do
 %q{
 DEFAULT_TITLE = 'GMINDAPP'
+DEFAULT_HEADER = 'GMINDAPP'
 }
         end
 

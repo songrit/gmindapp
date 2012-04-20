@@ -1,5 +1,6 @@
 require "gmindapp/version"
+require 'gmindapp/railtie'
 
 module Gmindapp
-  # Your code goes here...
+  # ...
 end

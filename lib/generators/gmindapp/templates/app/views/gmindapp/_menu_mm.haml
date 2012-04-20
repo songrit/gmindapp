@@ -1,0 +1,12 @@
+- process_services
+- Gmindapp::Module.all.each do |m|
+  %li
+    = m.name
+    %ul
+      - m.services.each do |s|
+        - if s.confirm
+          %li
+            %a{"data-panel"=>"main", :onclick=>"if (confirm('กรุณายืนยัน')) {location.hash='#{m[:url]}'};"}= m[:name]
+        - else
+          %li
+            %a{"data-panel"=>"main", :href=> m[:url]}= m[:name]
