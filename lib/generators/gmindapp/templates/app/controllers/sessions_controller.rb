@@ -4,15 +4,18 @@ class SessionsController < ApplicationController
     @title= 'เข้าใช้ระบบ'
   end
 
+  # to refresh the page, must know BEFOREHAND that the action needs refresh
+  # then use attribute 'data-ajax'=>'false'
+  # see app/views/sessions/new.html.erb for sample
   def create
     user = User.from_omniauth(env["omniauth.auth"])
     session[:user_id] = user.id
-    render :text => "<script>window.location.replace('/gmindapp/pending')</script>", :layout=> true
+    redirect_to '/gmindapp/pending'
   end
 
   def destroy
     session[:user_id] = nil
-    render :text => "<script>window.location.assign('/gmindapp/help')</script>", :layout => true 
+    redirect_to '/gmindapp/help'
   end
 
   def failure

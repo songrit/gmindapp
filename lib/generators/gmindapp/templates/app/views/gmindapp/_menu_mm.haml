@@ -1,12 +1,29 @@
 - process_services
 - Gmindapp::Module.all.each do |m|
+  - unless m.role.blank?
+    - next unless login?
+    - next unless current_user.role
+    - next unless current_user.role.upcase.split(',').include?(m.role.upcase)
   %li
     = m.name
     %ul
-      - m.services.each do |s|
+      - m.services.order(:seq).each do |s|
+        - next unless s.listed
+        - xml= REXML::Document.new(s.xml).root
+        - unless s.rule.blank?
+          - next if (!eval(s.rule))
+        - unless s.role.blank?
+          - next unless login?
+          - next unless current_user.role
+          - next unless current_user.role.upcase.split(',').include?(s.role.upcase)
+        - if s.code.downcase=="link"
+          - name, url = s.name.split(":")
+          - url.strip!
+        - else
+          - name= s.name; url= "/run/#{s.module.code}/#{s.code}"
         - if s.confirm
           %li
-            %a{"data-panel"=>"main", :onclick=>"if (confirm('กรุณายืนยัน')) {location.hash='#{m[:url]}'};"}= m[:name]
+            %a{"data-panel"=>"main", :onclick=>"if (confirm('กรุณายืนยัน')) {location.hash='#{url}'};"}= name
         - else
           %li
-            %a{"data-panel"=>"main", :href=> m[:url]}= m[:name]
+            %a{"data-panel"=>"main", :href=> url}= name

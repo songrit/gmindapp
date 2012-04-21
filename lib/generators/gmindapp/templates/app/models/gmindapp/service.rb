@@ -1,5 +1,6 @@
 class Gmindapp::Service
   include Mongoid::Document
+  field :uid, :type => String
   field :module, :type => String
   field :code, :type => String
   field :name, :type => String
@@ -9,6 +10,7 @@ class Gmindapp::Service
   field :seq, :type => Integer
   field :listed, :type => Boolean
   field :secured, :type => Boolean
+  field :confirm, :type => Boolean
 
   belongs_to :module, :class_name => "Gmindapp::Module"
 end

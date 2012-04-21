@@ -45,3 +45,17 @@ module Gmindapp
     end
   end
 end
+
+class String
+  def comment?
+    self[0]==35 # check if first char is #
+  end
+  def to_code
+    s= self.dup
+#    s.downcase!
+#    s.gsub! /[\s\-_]/, ""
+#    s
+    code, name = s.split(':')
+    code.downcase.strip.gsub(' ','_').gsub(/[^#_\/a-zA-Z0-9]/,'')
+  end
+end
