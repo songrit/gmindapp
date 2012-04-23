@@ -1,3 +1,7 @@
+require 'gmindapp'
+require 'gmindapp/helpers'
+include Gmindapp::Helpers
+
 @@btext= "# gmindapp begin"
 @@etext= "# gmindapp end"
 

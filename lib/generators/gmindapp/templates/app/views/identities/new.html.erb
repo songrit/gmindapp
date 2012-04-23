@@ -1,5 +1,5 @@
 <%- @title= 'ขึ้นทะเบียนผู้ใช้ใหม่' %>
-<%= form_tag "/auth/identity/register" do %>
+<%= form_tag "/auth/identity/register", {'data-ajax'=>'false'} do %>
   <% if @identity && @identity.errors.any? %>
     <div class="error_messages">
       <h2><%= pluralize(@identity.errors.count, "error") %> prohibited this account from being saved:</h2>

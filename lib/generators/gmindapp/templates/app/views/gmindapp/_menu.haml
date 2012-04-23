@@ -7,7 +7,7 @@
     %div{"data-role" => "content"}
       %ul{"data-role" => "listview", "data-theme" => "g"}
         %li
-          %a{"data-panel" => "main", :href => "/gmindapp/help"} คู่มือ
+          %a{"data-panel" => "main", :href => "/gmindapp/doc"} คู่มือ
         = render "/gmindapp/menu_mm"
         - if login?
           %li
@@ -17,3 +17,6 @@
             %a{:href=>new_session_path, "data-rel"=>"dialog", "data-panel" => "main"} เข้าใช้ระบบ
           %li
             %a{:href=>new_identity_path, "data-rel"=>"dialog", "data-panel" => "main"} สร้างผู้ใช้ใหม่
+        %li
+          /%a{"data-panel" => "main", :href => "/gmindapp/help"} คู่มือ
+          = link_to "ปรับปรุงหน้าจอ", "#", :onclick=>"window.location.replace('/')"

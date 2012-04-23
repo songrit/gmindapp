@@ -6,12 +6,37 @@ class GmindappController < ApplicationController
     end
     render :layout => false 
   end
+  def doc
+    require 'rdoc'
+    @app= get_app
+    @name = 'ระบบงานสินเชื่อติดตั้งแก๊ซใช้ในรถยนต์'
+    @intro = File.read('README.md')
+    doc= render_to_string 'doc.md', :layout => false
+    respond_to do |format|
+      format.html { 
+        render :text=> Maruku.new(doc).to_html, :layout => 'layouts/_page'
+        # render :text=> Maruku.new(doc).to_html, :layout => false
+      # format.html { 
+      #   h = RDoc::Markup::ToHtml.new
+      #   render :text=> h.convert(doc), :layout => 'layouts/_page' 
+      }
+      format.pdf  { 
+        latex= Maruku.new(doc).to_latex
+        File.open('tmp/doc.md','w') {|f| f.puts doc}
+        File.open('tmp/doc.tex','w') {|f| f.puts latex}
+        # system('pdflatex tmp/doc.tex ')
+        # send_file( 'tmp/doc.pdf', :type => ‘application/pdf’,
+          # :disposition => ‘inline’, :filename => 'doc.pdf')
+        render :text=>'done'
+      }
+    end
+  end
   def end_action
     redirect_to :action=> "pending"
   end
-  def about
-    render :layout => false 
-  end
+  # def about
+  #   render :layout => false 
+  # end
   def store_asset
     if params[:content]
       doc = GmaDoc.create! :name=> 'asset',
@@ -42,10 +67,10 @@ class GmindappController < ApplicationController
     redirect_to_root
   end
   def help
-#    render :text => "help"
   end
   def pending
-    @xmains= GmaXmain.all :conditions=>"status='R' or status='I' ", :order=>"created_at", :include=>:gma_runseqs
+    @xmains= []
+    # @xmains= GmaXmain.all :conditions=>"status='R' or status='I' ", :order=>"created_at", :include=>:gma_runseqs
   end
   def search
     @q = params[:q] || params[:gma_search][:q] || ""
@@ -92,5 +117,15 @@ class GmindappController < ApplicationController
     @gma_module= GmaModule.find_by_name params[:module]
     # @waypoint= Waypoint.find session[:waypoint_id]
     render :layout => false
+  end
+  
+  # methods for development purpose
+  
+  # dev: clear all users and log out
+  def clear_users
+    User.delete_all
+    Identity.delete_all
+    session[:user_id] = nil
+    render :text => "<script>window.location.assign('/gmindapp/help')</script>", :layout => true 
   end
 end

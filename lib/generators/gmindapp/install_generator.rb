@@ -19,6 +19,8 @@ module Gmindapp
         gem "mongo", "1.5.1"
         gem "bson_ext", "1.5.1"
         gem "mongoid"
+        gem 'maruku'
+        gem 'wirble'
         gem_group :development, :test do
           gem "ruby-debug"
           gem "rspec"
@@ -37,6 +39,7 @@ module Gmindapp
       end
 
       def setup_env
+        create_file 'README.md', ''
         run "bundle install"
         generate "mongoid:config"
         generate "rspec:install"
