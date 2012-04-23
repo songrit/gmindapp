@@ -48,12 +48,12 @@ end
       doc = add_utf8(doc)
       attr_hash= make_fields(model)
       doc = add_gmindapp(doc, attr_hash)
-      t << "modified:   #{model_file}"
+      # t << "modified:   #{model_file}"
       File.open(model_file, "w") do |f|
         f.puts doc
       end
     end
-    puts t.join("\n")
+    # puts t.join("\n")
   end
   
   def add_gmindapp(doc, attr_hash)

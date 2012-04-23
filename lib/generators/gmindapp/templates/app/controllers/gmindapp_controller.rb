@@ -6,15 +6,21 @@ class GmindappController < ApplicationController
     end
     render :layout => false 
   end
+  def doc_print
+    render :file=>'public/doc.html', :layout=>'layouts/print'
+  end
   def doc
     require 'rdoc'
     @app= get_app
     @name = 'ระบบงานสินเชื่อติดตั้งแก๊ซใช้ในรถยนต์'
     @intro = File.read('README.md')
+    @print= "<div align='right'><img src='/assets/printer.png'/> <a href='/gmindapp/doc_print' target='_blank'/>พิมพ์</a></div>"
     doc= render_to_string 'doc.md', :layout => false
+    html= Maruku.new(doc).to_html
+    File.open('public/doc.html','w') {|f| f.puts html }
     respond_to do |format|
       format.html { 
-        render :text=> Maruku.new(doc).to_html, :layout => 'layouts/_page'
+        render :text=> @print+html, :layout => 'layouts/_page'
         # render :text=> Maruku.new(doc).to_html, :layout => false
       # format.html { 
       #   h = RDoc::Markup::ToHtml.new

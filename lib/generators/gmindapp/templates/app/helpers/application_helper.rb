@@ -1,76 +1,10 @@
 # -*- encoding : utf-8 -*-
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-  def process_services
-    xml= get_app
-    protected_services = []
-    protected_modules = []
-    mseq= 0
-    @services= xml.elements["//node[@TEXT='services']"] || REXML::Document.new
-    @services.each_element('node') do |m|
-      ss= m.attributes["TEXT"]
-      code, name= ss.split(':', 2)
-      next if code.blank?
-      next if code.comment?
-      module_code= code.to_code
-      # create or update to GmaModule
-      gma_module= Gmindapp::Module.find_or_create_by :code=>module_code
-      gma_module.update_attributes :uid=>gma_module.id.to_s
-      protected_modules << gma_module.uid
-      name = module_code if name.blank?
-      gma_module.update_attributes :name=> name.strip, :seq=> mseq
-      mseq += 1
-      seq= 0
-      m.each_element('node') do |s|
-        service_name= s.attributes["TEXT"].to_s
-        scode, sname= service_name.split(':', 2)
-        sname ||= scode; sname.strip!
-        scode= scode.to_code
-        if scode=="role"
-          gma_module.update_attribute :role, sname
-          next
-        end
-        if scode.downcase=="link"
-          role= get_option_xml("role", s) || ""
-          rule= get_option_xml("rule", s) || ""
-          gma_service= Gmindapp::Service.find_or_create_by :module=> module_code, :code=> scode, :name=> sname
-          gma_service.update_attributes :xml=>s.to_s, :name=>sname,
-            :listed=>listed(s), :secured=>secured?(s),
-            :module_id=>gma_module.id, :seq => seq,
-            :confirm=> get_option_xml("confirm", xml),
-            :role => role, :rule => rule, :uid=> gma_service.id.to_s
-          seq += 1
-          protected_services << gma_service.uid
-        else
-          # normal service
-          step1 = s.elements['node']
-          role= get_option_xml("role", step1) || ""
-          rule= get_option_xml("rule", step1) || ""
-          gma_service= Gmindapp::Service.find_or_create_by :module=> module_code, :code=> scode
-          gma_service.update_attributes :xml=>s.to_s, :name=>sname,
-            :listed=>listed(s), :secured=>secured?(s),
-            :module_id=>gma_module.id, :seq => seq,
-            :confirm=> get_option_xml("confirm", xml),
-            :role => role, :rule => rule, :uid=> gma_service.id.to_s
-          seq += 1
-          protected_services << gma_service.uid
-        end
-      end
-    end
-    Gmindapp::Module.not_in(:uid=>protected_modules).delete_all
-    Gmindapp::Service.not_in(:uid=>protected_services).delete_all
-    # GmaService.delete_all(["id NOT IN (?)",protected_services])
-    # GmaModule.delete_all(["id NOT IN (?)",protected_modules])      
+  def code(s)
+    "<pre style='background-color: #efffef;'><code class='ruby' lang='ruby'>#{s}</code></pre>".html_safe
   end
-  def gmodules_old
-    [
-      {:name=>'แบบสำรวจ', :url=>"/surveys"},
-      {:name=>'สร้างแบบสำรวจ', :url=>"/surveys/new"},
-      {:name=>'รายงาน', :url=>"/surveys/report"},
-      {:name=>'** clear user', :url=>"/gmindapp/clear_users"},
-      {:name=>'ทดสอบ', :url=>"/surveys/report", :confirm=>1}
-    ]
-  end
+  
   def date_thai(d= Time.now, options={})
     y = d.year+543
     if options[:monthfull] || options[:month_full]

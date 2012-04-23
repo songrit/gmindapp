@@ -8,7 +8,7 @@ class Gmindapp::Service
   field :role, :type => String
   field :rule, :type => String
   field :seq, :type => Integer
-  field :listed, :type => Boolean
+  field :list, :type => Boolean
   field :secured, :type => Boolean
   field :confirm, :type => Boolean
 

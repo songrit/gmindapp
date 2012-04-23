@@ -3,11 +3,13 @@ module Gmindapp
     def process_services
       # todo: persist mm_md5
       xml= @app||get_app
-      md5= Digest::MD5.hexdigest(xml.to_s)
-      if session[:mm_md5]
-        return if session[:mm_md5]==md5
-      else
-        session[:mm_md5]= md5
+      if defined? session
+        md5= Digest::MD5.hexdigest(xml.to_s)
+        if session[:mm_md5]
+          return if session[:mm_md5]==md5
+        else
+          session[:mm_md5]= md5
+        end
       end
       protected_services = []
       protected_modules = []
@@ -41,7 +43,7 @@ module Gmindapp
             rule= get_option_xml("rule", s) || ""
             gma_service= Gmindapp::Service.find_or_create_by :module=> module_code, :code=> scode, :name=> sname
             gma_service.update_attributes :xml=>s.to_s, :name=>sname,
-              :listed=>listed(s), :secured=>secured?(s),
+              :list=>listed(s), :secured=>secured?(s),
               :module_id=>gma_module.id, :seq => seq,
               :confirm=> get_option_xml("confirm", xml),
               :role => role, :rule => rule, :uid=> gma_service.id.to_s
@@ -54,7 +56,7 @@ module Gmindapp
             rule= get_option_xml("rule", step1) || ""
             gma_service= Gmindapp::Service.find_or_create_by :module=> module_code, :code=> scode
             gma_service.update_attributes :xml=>s.to_s, :name=>sname,
-              :listed=>listed(s), :secured=>secured?(s),
+              :list=>listed(s), :secured=>secured?(s),
               :module_id=>gma_module.id, :seq => seq,
               :confirm=> get_option_xml("confirm", xml),
               :role => role, :rule => rule, :uid=> gma_service.id.to_s
@@ -95,7 +97,7 @@ module Gmindapp
       return t
     end
     def controller_exists?(modul)
-      File.exists? "#{RAILS_ROOT}/app/controllers/#{modul}_controller.rb"
+      File.exists? "#{Rails.root}/app/controllers/#{modul}_controller.rb"
     end
     def dup_hash(a)
       h = Hash.new(0)
@@ -103,6 +105,74 @@ module Gmindapp
         h[aa] += 1
       end
       return h
+    end
+    def login?
+      session[:user_id] != nil
+    end
+    def own_xmain?
+      if $xvars
+        return current_user.id==$xvars[:user_id]
+      else
+        return true
+      end
+    end
+    def get_option_xml(opt, xml)
+      if xml
+        url=''
+        xml.each_element('node') do |n|
+          text= n.attributes['TEXT']
+          url= text if text =~/^#{opt}/
+        end
+        return nil if url.blank?
+        c, h= url.split(':', 2)
+        opt= h ? h.strip : true
+      else
+        return nil
+      end
+    end
+    def listed(node)
+      icons=[]
+      node.each_element("icon") do |nn|
+        icons << nn.attributes["BUILTIN"]
+      end
+      return !icons.include?("closed")
+    end
+    def secured?(node)
+      icons=[]
+      node.each_element("icon") do |nn|
+        icons << nn.attributes["BUILTIN"]
+      end
+      return icons.include?("password")
+    end
+    def freemind2action(s)
+      case s.downcase
+      #when 'bookmark' # Excellent
+      #  'call'
+      when 'bookmark' # Excellent
+        'do'
+      when 'attach' # Look here
+        'form'
+      when 'edit' # Refine
+        'pdf'
+      when 'wizard' # Magic
+        'ws'
+      when 'help' # Question
+        'if'
+      when 'forward' # Forward
+        'redirect'
+      when 'kaddressbook' #Phone
+        'invoke' # invoke new service along the way
+      when 'pencil'
+        'output'
+      when 'mail'
+        'mail'
+      end
+    end
+    def affirm(s)
+      return s =~ /[y|yes|t|true]/i ? true : false
+    end
+    def negate(s)
+      return s =~ /[n|no|f|false]/i ? true : false
     end
     
     module FormBuilder
