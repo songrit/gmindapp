@@ -7,21 +7,32 @@ include Gmindapp::Helpers
 
 namespace :gmindapp do
   desc "generate models from mm"
-  task :update do
+  task :update=> :environment do
+    @app= get_app
     process_models
+    process_controllers
   end
   
   desc "cancel all pending tasks"
-  task :cancel=>:environment do
+  task :cancel=> :environment do
     GmaXmain.update_all "status='X'", "status='I' or status='R'"
   end
 end
 
 # ----------------------------
+  def process_controllers
+    process_services
+    modules= Gmindapp::Module.all
+    modules.each do |m|
+      next if controller_exists?(m.code)
+      system("rails generate controller #{m.code}")
+    end
+  end
+
   def process_models
-    app= get_app
-    t= ["process models"]
-    models= app.elements["//node[@TEXT='models']"] || REXML::Document.new
+    # app= get_app
+    # t= ["process models"]
+    models= @app.elements["//node[@TEXT='models']"] || REXML::Document.new
     models.each_element('node') do |model|
       # t << "= "+model.attributes["TEXT"]
       model_name= model.attributes["TEXT"]
