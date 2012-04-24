@@ -1,7 +1,7 @@
 class Gmindapp::Service
   include Mongoid::Document
   field :uid, :type => String
-  field :module, :type => String
+  field :module_code, :type => String
   field :code, :type => String
   field :name, :type => String
   field :xml, :type => String

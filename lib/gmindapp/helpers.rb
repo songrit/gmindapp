@@ -41,7 +41,7 @@ module Gmindapp
           if scode.downcase=="link"
             role= get_option_xml("role", s) || ""
             rule= get_option_xml("rule", s) || ""
-            gma_service= Gmindapp::Service.find_or_create_by :module=> module_code, :code=> scode, :name=> sname
+            gma_service= Gmindapp::Service.find_or_create_by :module_code=> gma_module.code, :code=> scode, :name=> sname
             gma_service.update_attributes :xml=>s.to_s, :name=>sname,
               :list=>listed(s), :secured=>secured?(s),
               :module_id=>gma_module.id, :seq => seq,
@@ -54,7 +54,7 @@ module Gmindapp
             step1 = s.elements['node']
             role= get_option_xml("role", step1) || ""
             rule= get_option_xml("rule", step1) || ""
-            gma_service= Gmindapp::Service.find_or_create_by :module=> module_code, :code=> scode
+            gma_service= Gmindapp::Service.find_or_create_by :module_code=> gma_module.code, :code=> scode
             gma_service.update_attributes :xml=>s.to_s, :name=>sname,
               :list=>listed(s), :secured=>secured?(s),
               :module_id=>gma_module.id, :seq => seq,
