@@ -11,6 +11,8 @@ class SessionsController < ApplicationController
     user = User.from_omniauth(env["omniauth.auth"])
     session[:user_id] = user.id
     redirect_to '/gmindapp/pending'
+  rescue
+    redirect_to root_path, :alert=> "Authentication failed, please try again."
   end
 
   def destroy
@@ -19,6 +21,6 @@ class SessionsController < ApplicationController
   end
 
   def failure
-    redirect_to root_url, :alert=> "Authentication failed, please try again."
+    redirect_to root_path, :alert=> "Authentication failed, please try again."
   end
 end

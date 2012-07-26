@@ -21,6 +21,7 @@ module Gmindapp
         gem "mongoid"
         gem 'maruku'
         gem 'wirble'
+        gem 'therubyracer'
         gem_group :development, :test do
           gem "ruby-debug"
           gem "rspec"
@@ -67,6 +68,8 @@ DEFAULT_HEADER = 'GMINDAPP'
         inject_into_file 'config/environments/development.rb', :after => 'config.action_mailer.raise_delivery_errors = false' do
           "\n  config.action_mailer.default_url_options = { :host => 'localhost:3000' }"
         end
+        inject_into_file 'config/environments/production.rb', :after => 'config.assets.compile = false' do
+          "\n  config.assets.compile = true"
       end
       
       def setup_mail

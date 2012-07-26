@@ -20,7 +20,7 @@
           - name, url = s.name.split(":")
           - url.strip!
         - else
-          - name= s.name; url= "/run/#{s.module.code}/#{s.code}"
+          - name= s.name; url= "/gmindapp/init/#{s.module_code}/#{s.code}"
         - if s.confirm
           %li
             %a{"data-panel"=>"main", :onclick=>"if (confirm('กรุณายืนยัน')) {location.hash='#{url}'};"}= name

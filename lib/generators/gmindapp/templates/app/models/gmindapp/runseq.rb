@@ -2,11 +2,8 @@
 class Gmindapp::Runseq
   include Mongoid::Document
   include Mongoid::Timestamps
-  belongs_to :gma_user
-  belongs_to :gma_xmain
-  belongs_to :location
-
-  named_scope "form_action", :conditions=>['action=? OR action=? OR action=?','form','output','pdf']
+  belongs_to :user
+  belongs_to :xmain, :class_name => "Gmindapp::Xmain"
 
   field :action, :type => String
   field :status, :type => String
@@ -21,4 +18,7 @@ class Gmindapp::Runseq
   field :end, :type => Boolean
   field :xml, :type => String
   field :ip, :type => String
+
+  scope :form_action, where(:action.in=> ['form','output','pdf'])
+
 end

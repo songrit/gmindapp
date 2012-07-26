@@ -6,6 +6,176 @@ class GmindappController < ApplicationController
     end
     render :layout => false 
   end
+  def init
+    @service= Gmindapp::Service.first :conditions=>{
+      :module_code=> params[:module], :code=> params[:service] }
+    if @service && authorize_init?
+      xmain = create_xmain(@service)
+      result = create_runseq(xmain)
+      unless result
+        message = "cannot find action for xmain #{xmain.id}"
+        gma_log("ERROR", message)
+        flash[:notice]= message
+        # gma_notice message
+        redirect_to "pending" and return
+      end
+      xmain.update_attribute(:xvars, @xvars)
+      xmain.gma_runseqs.last.update_attribute(:end,true)
+      redirect_to :action=>'run', :id=>xmain.id
+    else
+      flash[:notice]= "ขออภัย ไม่สามารถทำงานได้"
+      gma_notice "ขออภัย ไม่สามารถทำงานได้"
+      gma_log("SECURITY", "unauthorize access: #{params.inspect}")
+      redirect_to_root
+    end
+  end
+  def run
+    init_vars(params[:id])
+    if authorize?
+      # session[:full_layout]= false
+      redirect_to(:action=>"run_#{@runseq.action}", :id=>@xmain.id)
+    else
+      redirect_to_root
+    end
+  end
+  def run_form
+    init_vars(params[:id])
+    if authorize?
+      if ['F', 'X'].include? @xmain.status
+        redirect_to_root
+      else
+        @title= "รหัสดำเนินการ #{@xmain.id}: #{@xmain.name} / #{@runseq.name}"
+        service= @xmain.gma_service
+        if service
+          f= "app/views/#{service.module}/#{service.code}/#{@runseq.code}.rhtml"
+          @f_help= "app/views/#{service.module}/#{service.code}/#{@runseq.code}.redcloth"
+          @ui= File.read(f)
+          # $xvars[:full_layout]= !ajax?(@ui)
+          @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next &gt;"
+          #      @message = "Done" if @runseq.form_step==@xvars[:total_form_steps]
+        else
+          flash[:notice]= "ไม่สามารถค้นหาบริการที่ต้องการได้"
+          gma_notice "ไม่สามารถค้นหาบริการที่ต้องการได้"
+          redirect_to_root
+        end
+      end
+    else
+      redirect_to_root
+    end
+  end
+  
+  private
+  def create_xmain(service)
+    c = name2camel(service.module)
+    custom_controller= "#{c}Controller"
+    GmaXmain.create :service=>service,
+      :start=>Time.now,
+      :name=>service.name,
+      :ip=> get_ip,
+      :status=>'I', # init
+      :user=>current_user,
+      :xvars=> {
+        :service_id=>service.id, :p=>params,
+        :id=>params[:id],
+        :user_id=>current_user.id, :custom_controller=>custom_controller,
+        :host=>request.host,
+        :referer=>request.env['HTTP_REFERER'] }
+  end
+  def create_runseq(xmain)
+    @xvars= xmain.xvars
+    default_role= get_default_role
+    xml= xmain.gma_service.xml
+    root = REXML::Document.new(xml).root
+    i= 0; j= 0 # i= step, j= form_step
+    root.elements.each('node') do |activity|
+      text= activity.attributes['TEXT']
+      next if gma_comment?(text)
+      next if text =~/^rule:\s*/
+      action= freemind2action(activity.elements['icon'].attributes['BUILTIN']) if activity.elements['icon']
+      return false unless action
+      i= i + 1
+      output_display= false
+      if action=='output'
+        display= get_option_xml("display", activity)
+        if display && !affirm(display)
+          output_display= false
+        else
+          output_display= true
+        end
+      end
+      j= j + 1 if (action=='form' || output_display)
+      @xvars[:referer] = activity.attributes['TEXT'] if action=='redirect'
+      if action!= 'if'
+        scode, name= text.split(':', 2)
+        name ||= scode; name.strip!
+        code= name2code(scode)
+      else
+        code= text
+        name= text
+      end
+      role= get_option_xml("role", activity) || default_role
+      rule= get_option_xml("rule", activity) || "true"
+      runseq= GmaRunseq.create :gma_xmain_id=>xmain.id,
+        :name=> name, :action=> action,
+        :code=> code, :role=>role.upcase, :rule=> rule,
+        :rstep=> i, :form_step=> j, :status=>'I',
+        :xml=>activity.to_s
+      xmain.current_runseq= runseq.id if i==1
+    end
+    @xvars[:total_steps]= i
+    @xvars[:total_form_steps]= j
+  end
+  def init_vars(xmain)
+    @xmain= GmaXmain.find xmain
+    @xvars= @xmain.xvars
+    @runseq= @xmain.gma_runseqs.find @xmain.current_runseq
+#    authorize?
+    @xvars[:current_step]= @runseq.rstep
+    @xvars[:referrer]= request.referrer
+    session[:xmain_id]= @xmain.id
+    session[:runseq_id]= @runseq.id
+    unless params[:action]=='run_call'
+      @runseq.start ||= Time.now
+      @runseq.status= 'R' # running
+      @runseq.save
+    end
+    $xmain= @xmain; $xvars= @xvars
+    $runseq_id= @runseq.id; $user_id= get_user.id
+  end
+  def init_vars_by_runseq(runseq_id)
+    @runseq= GmaRunseq.find runseq_id
+    @xmain= @runseq.gma_xmain
+    @xvars= @xmain.xvars
+    #@xvars[:current_step]= @runseq.rstep
+    @runseq.start ||= Time.now
+    @runseq.status= 'R' # running
+    @runseq.save
+  end
+  def end_action(next_runseq = nil)
+    #    @runseq.status='F' unless @runseq_not_f
+    @xmain.xvars= @xvars
+    @xmain.status= 'R' # running
+    @xmain.save
+    @runseq.status='F'
+    @runseq.gma_user_id= session[:user_id]
+    @runseq.stop= Time.now
+    @runseq.save
+    next_runseq= @xmain.gma_runseqs.find_by_rstep @runseq.rstep+1 unless next_runseq
+    if @end_job || !next_runseq # job finish
+      @xmain.xvars= @xvars
+      @xmain.status= 'F' unless @xmain.status== 'E' # finish
+      @xmain.stop= Time.now
+      @xmain.save
+      if @xvars[:p][:return]
+        redirect_to @xvars[:p][:return] and return
+      else
+        redirect_to_root and return
+      end
+    else
+      @xmain.update_attribute :current_runseq, next_runseq.id
+      redirect_to :action=>'run', :id=>@xmain.id and return
+    end
+  end
   def doc_print
     render :file=>'public/doc.html', :layout=>'layouts/print'
   end
@@ -112,26 +282,5 @@ class GmindappController < ApplicationController
     gma_notice "We're sorry, but something went wrong. We've been notified about this issue and we'll take a look at it shortly."
     # gma_notice "ขออภัย เกิดข้อผิดพลาดรหัส 500 ขึ้นในระบบ กรุณาติดต่อผู้ดูแลระบบ"
     redirect_to '/'
-  end
-
-  # ajax call to update modules menu and sidebar
-  def modules
-    @modules= GmaModule.all :order=>"seq"
-    render :layout => false
-  end
-  def sidebar
-    @gma_module= GmaModule.find_by_name params[:module]
-    # @waypoint= Waypoint.find session[:waypoint_id]
-    render :layout => false
-  end
-  
-  # methods for development purpose
-  
-  # dev: clear all users and log out
-  def clear_users
-    User.delete_all
-    Identity.delete_all
-    session[:user_id] = nil
-    render :text => "<script>window.location.assign('/gmindapp/help')</script>", :layout => true 
   end
 end

@@ -1,22 +1,24 @@
 # -*- encoding : utf-8 -*-
 class Gmindapp::Xmain
   include Mongoid::Document
+  # gmindapp begin
   include Mongoid::Timestamps
-  belongs_to :gma_user
-  belongs_to :gma_service
-  has_many :gma_runseqs, :order=>"rstep"
-  has_many :comments, :order=>"created_at"
-  has_many :gma_docs, :order=>"created_at"
-
-  field :status, :type => String
-  field :xvars, :type => Hash
+  belongs_to :service
   field :start, :type => DateTime
   field :stop, :type => DateTime
-  field :current_runseq, :type => Integer
   field :name, :type => String
   field :ip, :type => String
+  field :status, :type => String
+  belongs_to :user
+  field :xvars, :type => Hash
+  field :current_runseq, :type => Integer
+  # gmindapp end
 
-  # serialize :xvars
+  has_many :runseqs, :class_name => "Gmindapp::Runseq"
+
+  # has_many :gma_runseqs, :order=>"rstep"
+  # has_many :comments, :order=>"created_at"
+  # has_many :gma_docs, :order=>"created_at"
 
   # number of xmains on the specified date
   def self.number(d)
