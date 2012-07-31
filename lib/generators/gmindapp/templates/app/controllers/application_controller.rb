@@ -16,12 +16,7 @@ class ApplicationController < ActionController::Base
       return user.role.upcase.split(',').include?(role.upcase)
     end
   end
-  def gma_log(log_type, message)
-    # remove params[:password] before log
-    log_params= params
-    log_params[:password]= nil
-    # todo
-    # GmaLog.create :log_type=>log_type, :message=>message,
-    #   :iparams=>log_params, :controller=>params[:controller], :action=>params[:action]
+  def gma_log(message)
+    Gmindapp::Notice.create :message => message, :unread=> true
   end
 end

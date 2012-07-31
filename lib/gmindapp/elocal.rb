@@ -29,9 +29,6 @@ module Gmindapp
       </script>".html_safe
     end
   
-    def handle_gma_notice
-      ""
-    end
     def current_user
       @user ||= User.find(session[:user_id])
     end
