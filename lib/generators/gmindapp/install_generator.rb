@@ -107,6 +107,13 @@ end
         identity.password = "secret"
         identity.password_confirmation = "secret"
         identity.save
+        user= User.new
+        user.provider = "identity"
+        user.uid = identity.id.to_s
+        user.name = identity.name
+        user.email = identity.email
+        user.role = "M,A,D"
+        user.save
       end
     end
   end
