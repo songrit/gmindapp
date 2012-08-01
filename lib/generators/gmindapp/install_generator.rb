@@ -100,6 +100,14 @@ end
         inside("app/assets/stylesheets") { run "mv application.css application.css.bak" }
         directory "app"
       end
+      def gen_user
+        identity = Identity.new
+        identity.name = "admin"
+        identity.email = "admin@test.com"
+        identity.password = "secret"
+        identity.password_confirmation = "secret"
+        identity.save
+      end
     end
   end
 end
