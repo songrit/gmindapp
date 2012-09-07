@@ -8,7 +8,7 @@ module Gmindapp
       def setup_gems
         gem "nokogiri"
         gem "mechanize"
-        gem "rmagick", :require => "RMagick", :platform => "ruby"
+        # gem "rmagick", :require => "RMagick", :platform => "ruby"
         gem "geokit"
         gem 'rubyzip', :require => 'zip/zip'
         gem 'haml-rails'
@@ -23,7 +23,8 @@ module Gmindapp
         gem 'wirble'
         gem 'therubyracer'
         gem_group :development, :test do
-          gem "ruby-debug"
+          # gem "ruby-debug"
+          gem "debugger"
           gem "rspec"
           gem "rspec-rails"
         end
@@ -70,6 +71,7 @@ DEFAULT_HEADER = 'GMINDAPP'
         end
         inject_into_file 'config/environments/production.rb', :after => 'config.assets.compile = false' do
           "\n  config.assets.compile = true"
+        end
       end
       
       def setup_mail
