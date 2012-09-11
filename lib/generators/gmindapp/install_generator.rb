@@ -19,7 +19,8 @@ module Gmindapp
         gem "mongo", "1.5.1"
         gem "bson_ext", "1.5.1"
         gem "mongoid"
-        gem 'maruku'
+        gem "redcarpet"
+        # gem 'maruku'
         gem 'wirble'
         gem 'therubyracer'
         gem_group :development, :test do
