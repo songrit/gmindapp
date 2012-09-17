@@ -8,10 +8,10 @@
  * You're free to add application-wide styles to this file and they'll appear at the top of the
  * compiled file, but it's generally better to create a new file per style scope.
  *
- *= require_self
- *= require jquery.mobile-1.0a4.1
+ *= require jquery.mobile
  *= require jquery.mobile.splitview
- *= require jquery.mobile.scrollview
+ *= require jquery.mobile.grids.collapsible
+
  *= require jquery.mobile.datebox.css
  *= require elocal
  *= require sarabun

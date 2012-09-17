@@ -1,29 +1,32 @@
-body { display:none; }
-.ui-btn-inner { padding: 2px 25px; }
+body {
+  font-size: 1em;
+  /*line-height: normal;*/
+  }
+}.ui-btn-inner { padding: 2px 25px; }
 .ui-btn-up-c,
 .ui-btn-hover-c,
 .ui-btn-down-c {
   font-family: 'TH SarabunPSK', Helvetica, Arial, sans-serif;
-  font-size: 110%;
+  /*font-size: 110%;*/
 }
 .ui-li .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li { padding: 7px 75px 7px 15px; display: block; }
-.ui-link-inherit { font-size: 24px; }
+.ui-link-inherit { font-family: 'TH SarabunPSK', Helvetica, Arial, sans-serif;}
 label.ui-input-text {
   font-family: 'TH SarabunPSK', Helvetica, Arial, sans-serif;
-  font-size: 110%;
+  /*font-size: 110%;*/
   text-shadow: none;
 }
 label.ui-select {
   font-family: 'TH SarabunPSK', Helvetica, Arial, sans-serif;
-  font-size: 110%;
+  /*font-size: 110%;*/
   text-shadow: none;
 }
 .ui-body-c {
   font-family: 'TH SarabunPSK', Helvetica, Arial, sans-serif;
-  font-size: 1.4em;
+  /*font-size: 1.4em;*/
   text-shadow: none;
 }
-.ui-header .ui-title, .ui-footer .ui-title { font-size: 24px; font-family: 'TH SarabunPSK'; text-align: center; display: block; margin: .2em 90px .3em;  padding: 0;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; outline: 0 !important; }
+.ui-header .ui-title, .ui-footer .ui-title { font-family: 'TH SarabunPSK'; text-align: center; display: block; margin: .2em 90px .3em;  padding: 0;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; outline: 0 !important; }
 
 .flickr_pagination {
   text-align: center;
