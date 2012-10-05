@@ -80,7 +80,11 @@ module Gmindapp
 
     # old methods, don't know where they came from
     def current_user
-      @user ||= User.find(session[:user_id])
+      if session[:user_id]
+        return @user ||= User.find(session[:user_id])
+      else
+        return nil
+      end
     end
     def ui_action?(s)
       %w(form output mail pdf).include? s
