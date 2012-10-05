@@ -3,7 +3,7 @@ class Gmindapp::Xmain
   include Mongoid::Document
   # gmindapp begin
   include Mongoid::Timestamps
-  belongs_to :service
+  belongs_to :service, :class_name => "Gmindapp::Service"
   field :start, :type => DateTime
   field :stop, :type => DateTime
   field :name, :type => String
@@ -11,7 +11,7 @@ class Gmindapp::Xmain
   field :status, :type => String
   belongs_to :user
   field :xvars, :type => Hash
-  field :current_runseq, :type => Integer
+  field :current_runseq, :type => String
   # gmindapp end
 
   has_many :runseqs, :class_name => "Gmindapp::Runseq"

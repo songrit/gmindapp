@@ -33,12 +33,14 @@ module Gmindapp
       
       def setup_routes
         route "root :to => 'gmindapp#index'"
-        route "match 'gmindapp(/:action(/:id))(.:format)' => 'gmindapp'"
+        # route "match 'gmindapp(/:action(/:id))(.:format)' => 'gmindapp'"
+        route "match 'gmindapp/init/:module/:service' => 'gmindapp#init'"
         route "resources :identities"
         route "resources :sessions"
         route "match '/auth/:provider/callback' => 'sessions#create'"
         route "match '/auth/failure' => 'sessions#failure'"
         route "match '/logout' => 'sessions#destroy', :as => 'logout'"
+        route "match ':controller(/:action(/:id))(.:format)'"
       end
 
       def setup_env
@@ -64,6 +66,7 @@ module Gmindapp
 %q{
 DEFAULT_TITLE = 'GMINDAPP'
 DEFAULT_HEADER = 'GMINDAPP'
+GMAP = true
 }
         end
 

@@ -13,8 +13,7 @@ class GmindappController < ApplicationController
     render :layout => false 
   end
   def init
-    @service= Gmindapp::Service.first :conditions=>{
-      :module_code=> params[:module], :code=> params[:service] }
+    @service= Gmindapp::Service.where(:module_code=> params[:module], :code=> params[:service]).first
     if @service && authorize_init?
       xmain = create_xmain(@service)
       result = create_runseq(xmain)
@@ -26,7 +25,7 @@ class GmindappController < ApplicationController
         redirect_to "pending" and return
       end
       xmain.update_attribute(:xvars, @xvars)
-      xmain.gma_runseqs.last.update_attribute(:end,true)
+      xmain.runseqs.last.update_attribute(:end,true)
       redirect_to :action=>'run', :id=>xmain.id
     else
       flash[:notice]= "ขออภัย ไม่สามารถทำงานได้"
@@ -51,10 +50,10 @@ class GmindappController < ApplicationController
         redirect_to_root
       else
         @title= "รหัสดำเนินการ #{@xmain.id}: #{@xmain.name} / #{@runseq.name}"
-        service= @xmain.gma_service
+        service= @xmain.service
         if service
-          f= "app/views/#{service.module}/#{service.code}/#{@runseq.code}.rhtml"
-          @f_help= "app/views/#{service.module}/#{service.code}/#{@runseq.code}.redcloth"
+          f= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.html.erb"
+          @f_help= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.redcloth"
           @ui= File.read(f)
           # $xvars[:full_layout]= !ajax?(@ui)
           @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next &gt;"
@@ -144,9 +143,9 @@ class GmindappController < ApplicationController
   
   private
   def create_xmain(service)
-    c = name2camel(service.module)
+    c = name2camel(service.module.code)
     custom_controller= "#{c}Controller"
-    GmaXmain.create :service=>service,
+    Gmindapp::Xmain.create :service=>service,
       :start=>Time.now,
       :name=>service.name,
       :ip=> get_ip,
@@ -162,7 +161,7 @@ class GmindappController < ApplicationController
   def create_runseq(xmain)
     @xvars= xmain.xvars
     default_role= get_default_role
-    xml= xmain.gma_service.xml
+    xml= xmain.service.xml
     root = REXML::Document.new(xml).root
     i= 0; j= 0 # i= step, j= form_step
     root.elements.each('node') do |activity|
@@ -193,7 +192,7 @@ class GmindappController < ApplicationController
       end
       role= get_option_xml("role", activity) || default_role
       rule= get_option_xml("rule", activity) || "true"
-      runseq= GmaRunseq.create :gma_xmain_id=>xmain.id,
+      runseq= Gmindapp::Runseq.create :xmain=>xmain.id,
         :name=> name, :action=> action,
         :code=> code, :role=>role.upcase, :rule=> rule,
         :rstep=> i, :form_step=> j, :status=>'I',
@@ -204,9 +203,9 @@ class GmindappController < ApplicationController
     @xvars[:total_form_steps]= j
   end
   def init_vars(xmain)
-    @xmain= GmaXmain.find xmain
+    @xmain= Gmindapp::Xmain.find xmain
     @xvars= @xmain.xvars
-    @runseq= @xmain.gma_runseqs.find @xmain.current_runseq
+    @runseq= @xmain.runseqs.find @xmain.current_runseq
 #    authorize?
     @xvars[:current_step]= @runseq.rstep
     @xvars[:referrer]= request.referrer
@@ -218,7 +217,7 @@ class GmindappController < ApplicationController
       @runseq.save
     end
     $xmain= @xmain; $xvars= @xvars
-    $runseq_id= @runseq.id; $user_id= get_user.id
+    $runseq_id= @runseq.id; $user_id= current_user.id
   end
   def init_vars_by_runseq(runseq_id)
     @runseq= GmaRunseq.find runseq_id

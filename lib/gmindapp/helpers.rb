@@ -1,5 +1,90 @@
 module Gmindapp
   module Helpers
+
+    # methods from application_controller
+
+    def gma_comment?(s)
+      s[0]==35
+    end
+    def get_ip
+      request.env['HTTP_X_FORWARDED_FOR'] || request.env['REMOTE_ADDR']
+    end
+    def get_default_role
+      default_role= Gmindapp::Role.where(:code =>'default').first
+      return default_role ? default_role.name.to_s : ''
+    end
+    def name2code(s)
+      # rather not ignore # symbol cause it could be comment
+      code, name = s.split(':')
+      code.downcase.strip.gsub(' ','_').gsub(/[^#_\/a-zA-Z0-9]/,'')
+    end
+    def name2camel(s)
+      s.gsub(' ','_').camelcase
+    end
+    def true_action?(s)
+      %w(call ws redirect invoke email).include? s
+    end
+    def set_global
+      $xmain= @xmain ; $runseq = @runseq ; $user = current_user ; $xvars= @xmain.xvars
+    end
+    def authorize? # use in pending tasks
+      @runseq= @xmain.runseqs.find @xmain.current_runseq
+      return false unless @runseq
+      @user = current_user
+      set_global
+      return false unless eval(@runseq.rule) if @runseq.rule
+      return true if true_action?(@runseq.action)
+      # return false if check_wait
+      return true if @runseq.role.blank?
+      if @runseq.role
+        return false unless @user.role
+        return @user.role.upcase.split(',').include?(@runseq.role.upcase)
+      end
+    end
+    def authorize_init? # use when initialize new transaction
+      xml= @service.xml
+      step1 = REXML::Document.new(xml).root.elements['node']
+      role= get_option_xml("role", step1) || ""
+  #    rule= get_option_xml("rule", step1) || true
+      return true if role==""
+      user= get_user
+      unless user
+        return role.blank?
+      else
+        return false unless user.role
+        return user.role.upcase.split(',').include?(role.upcase)
+      end
+    end
+    def gma_log(message)
+      Gmindapp::Notice.create :message => message, :unread=> true
+    end
+
+    # methods from application_helper
+    def ajax?(s)
+      return s.match('file_field') ? false : true
+    end
+    def step(s, total) # square text
+      s = (s==0)? 1: s.to_i
+      total = total.to_i
+      out ="<div class='step'>"
+      (s-1).times {|ss| out += "<span class='steps_done'>#{(ss+1)}</span>" }
+      out += %Q@<span class='step_now' >@
+      out += s.to_s
+      out += "</span>"
+      out += %Q@@
+      for i in s+1..total
+        out += "<span class='steps_more'>#{i}</span>"
+      end
+      out += "</div>"
+    end
+
+    # old methods, don't know where they came from
+    def current_user
+      @user ||= User.find(session[:user_id])
+    end
+    def ui_action?(s)
+      %w(form output mail pdf).include? s
+    end
     def handle_gma_notice
       if Gmindapp::Notice.recent.count>0
         notice= Gmindapp::Notice.recent.last

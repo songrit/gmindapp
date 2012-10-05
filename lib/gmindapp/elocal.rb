@@ -28,10 +28,6 @@ module Gmindapp
       });
       </script>".html_safe
     end
-  
-    def current_user
-      @user ||= User.find(session[:user_id])
-    end
     def i2date(t,f)
       Time.utc t["#{f}(1i)"],t["#{f}(2i)"],t["#{f}(3i)"]
     end

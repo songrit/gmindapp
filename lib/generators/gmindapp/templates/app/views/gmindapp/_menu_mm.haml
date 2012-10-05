@@ -7,7 +7,7 @@
   %li
     = m.name
     %ul
-      - m.services.each do |s|
+      - m.services.asc(:seq).each do |s|
         - next unless s.list
         - xml= REXML::Document.new(s.xml).root
         - unless s.rule.blank?
