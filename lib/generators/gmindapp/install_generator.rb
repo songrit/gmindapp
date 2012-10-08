@@ -76,6 +76,9 @@ GMAP = true
         inject_into_file 'config/environments/production.rb', :after => 'config.assets.compile = false' do
           "\n  config.assets.compile = true"
         end
+        inject_into_file 'config/mongoid.yml', :after => '  # raise_not_found_error: true' do
+          "\n  raise_not_found_error: false"
+        end
       end
       
       def setup_mail
