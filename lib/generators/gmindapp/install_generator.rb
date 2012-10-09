@@ -23,6 +23,8 @@ module Gmindapp
         # gem 'maruku'
         gem 'wirble'
         gem 'therubyracer'
+        gem 'bcrypt-ruby', '~> 3.0.0'
+        gem 'omniauth-identity'
         gem_group :development, :test do
           # gem "ruby-debug"
           gem "debugger"
@@ -87,8 +89,8 @@ GMAP = true
       end
       
       def setup_omniauth
-        gem 'bcrypt-ruby', '~> 3.0.0'
-        gem 'omniauth-identity'
+        # gem 'bcrypt-ruby', '~> 3.0.0'
+        # gem 'omniauth-identity'
         initializer "omniauth.rb" do
 %q{
 Rails.application.config.middleware.use OmniAuth::Builder do
@@ -110,7 +112,7 @@ end
         directory "app"
       end
       def gen_user
-        copy_file "mail.rb","config/initializers/mail.rb"
+        copy_file "seeds.rb","db/seeds.rb"
 
         # identity = Identity.new
         # identity.name = "admin"
