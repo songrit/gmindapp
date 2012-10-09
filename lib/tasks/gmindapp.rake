@@ -51,7 +51,8 @@ end
             f= "app/views/#{s.module.code}/#{s.code}/#{code}.html.erb"
           end
           unless File.exists?(f)
-            ff=File.open(f, 'w'); ff.close
+            FileUtils.cp "app/gmindapp/template/view.html.erb", f
+            # ff=File.open(f, 'w'); ff.close
             t << "create file #{f}"
           end
         end

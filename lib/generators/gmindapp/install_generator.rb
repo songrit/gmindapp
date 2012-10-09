@@ -110,19 +110,21 @@ end
         directory "app"
       end
       def gen_user
-        identity = Identity.new
-        identity.name = "admin"
-        identity.email = "admin@test.com"
-        identity.password = "secret"
-        identity.password_confirmation = "secret"
-        identity.save
-        user= User.new
-        user.provider = "identity"
-        user.uid = identity.id.to_s
-        user.name = identity.name
-        user.email = identity.email
-        user.role = "M,A,D"
-        user.save
+        copy_file "mail.rb","config/initializers/mail.rb"
+
+        # identity = Identity.new
+        # identity.name = "admin"
+        # identity.email = "admin@test.com"
+        # identity.password = "secret"
+        # identity.password_confirmation = "secret"
+        # identity.save
+        # user= User.new
+        # user.provider = "identity"
+        # user.uid = identity.id.to_s
+        # user.name = identity.name
+        # user.email = identity.email
+        # user.role = "M,A,D"
+        # user.save
       end
     end
   end
