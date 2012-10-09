@@ -1,5 +1,5 @@
 - process_services
-- Gmindapp::Module.all.each do |m|
+- Gmindapp::Module.all.asc(:seq).each do |m|
   - unless m.role.blank?
     - next unless login?
     - next unless current_user.role
