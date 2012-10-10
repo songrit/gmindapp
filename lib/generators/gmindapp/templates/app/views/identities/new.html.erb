@@ -10,19 +10,19 @@
       </ul>
     </div>
   <% end %>
-  <div class="field">
+  <div class="field" data-role="fieldcontain">
     <%= label_tag :name, 'ชื่อผู้ใช้' %>
     <%= text_field_tag :name, @identity.try(:name) %>
   </div>
-  <div class="field">
+  <div class="field" data-role="fieldcontain">
     <%= label_tag :email %>
     <%= text_field_tag :email, @identity.try(:email) %>
   </div>
-  <div class="field">
+  <div class="field" data-role="fieldcontain">
     <%= label_tag :password, 'รหัสผ่าน' %>
     <%= password_field_tag :password %>
   </div>
-  <div class="field">
+  <div class="field" data-role="fieldcontain">
     <%= label_tag :password_confirmation, 'ยืนยันรหัสผ่าน' %>
     <%= password_field_tag :password_confirmation %>
   </div>
