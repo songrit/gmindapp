@@ -9,29 +9,22 @@
 /= stylesheet_link_tag 'jquery.autocomplete'
 %script
   function validate() { return true; }
-= javascript_include_tag "jquery.ui.core"
-= javascript_include_tag "jquery.ui.widget"
-= javascript_include_tag "jquery.ui.position"
-= javascript_include_tag "jquery.ui.autocomplete"
+/= javascript_include_tag "jquery.ui.core"
+/= javascript_include_tag "jquery.ui.widget"
+/= javascript_include_tag "jquery.ui.position"
+/= javascript_include_tag "jquery.ui.autocomplete"
 = javascript_include_tag "disable_enter_key"
 /= stylesheet_link_tag "jquery.ui","jquery.ui.autocomplete"
 
 %p
 - user = current_user || User.new
-- if @sign
-  .notice= "เอกสารอนุมัติด้วยระบบลายมือชื่ออิเล็กทรอนิกส์ ใช้งานได้เฉพาะเครื่องที่มีการติดตั้งโปรแกรม และกุญแจส่วนบุคคลของ<u>#{user.title} #{user.fname} #{user.lname}</u> เรียบร้อยแล้วเท่านั้น"
-  - form_class = 'sign formtastic'
-  - next_step = 'sign_form'
-- else
-  - form_class = 'formtastic'
-  - next_step = 'end_form'
-- form_tag({ :action => next_step } , {:multipart => true, :onSubmit=>'return validate()', :class=>form_class, "data-ajax"=>"#{ajax?(@ui)}"}) do
+- form_class = 'formtastic'
+- next_step = 'end_form'
+= form_tag({ :action => next_step } , {:multipart => true, :onSubmit=>'return validate()', :class=>form_class, "data-ajax"=>"#{ajax?(@ui)}"}) do
   = hidden_field_tag 'xmain_id', @xmain.id
   = hidden_field_tag 'ajax', ajax?(@ui)
   = hidden_field_tag 'runseq_id', @runseq.id
   = hidden_field_tag 'step', @xvars[:current_step]
-  - if @sign
-    = hidden_field_tag 'login', user.login
   = render :inline=> @ui
   %p
   = submit_tag @message
