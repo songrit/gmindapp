@@ -7,7 +7,7 @@ module Gmindapp
       end
       def setup_gems
         # gem "nokogiri"
-        gem "mechanize"
+        # gem "mechanize"
         # gem "rmagick", :require => "RMagick", :platform => "ruby"
         gem "geokit"
         gem 'rubyzip', :require => 'zip/zip'
