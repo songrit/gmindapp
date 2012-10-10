@@ -11,19 +11,19 @@
   - @xmains.each do |xmain|
     - @xmain= xmain
     - next unless xmain.current_runseq
-    - @runseq= GmaRunseq.find(xmain.current_runseq)
+    - @runseq= Gmindapp::Runseq.find(xmain.current_runseq)
     - next unless @runseq
     - next unless %w(form output pdf).include?(@runseq.action)
     /- debugger
-    - next if @xmain.gma_runseqs.first==@xmain.current_runseq && @xmain.gma_user!=current_user
+    - next if @xmain.runseqs.first==@xmain.current_runseq && @xmain.gma_user!=current_user
     - next unless authorize?
     %tr
-      %td= link_to xmain.id, :controller=>"engine", :action=>"run", :id=>xmain.id
-      %td= link_to xmain.name, :controller=>"engine", :action=>"run", :id=>xmain.id
+      %td= link_to xmain.id, :controller=>"gmindapp", :action=>"run", :id=>xmain.id
+      %td= link_to xmain.name, :controller=>"gmindapp", :action=>"run", :id=>xmain.id
       %td= @runseq.name
-      %td{:align=>'center'}= xmain.gma_user.full_name
+      %td{:align=>'center'}= xmain.user ? xmain.user.name : ""
       %td= date_thai xmain.start
       %td{:align=>'center'}= link_to image_tag("delete.png",                          |
         :style=>'border:none; float:none;'),                                          |
-        {:controller=>'engine', :action=>'cancel', :id=>xmain.id, :return=>url_for},  |
+        {:controller=>'gmindapp', :action=>'cancel', :id=>xmain.id, :return=>url_for},  |
         :confirm=>"confirm?"                                                          |
