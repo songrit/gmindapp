@@ -39,7 +39,7 @@
   color: white;
   width: 80px;
   height: 80px;
-  background:url(../images/button_blue.png) no-repeat;
+  background:url(images/button_blue.png) no-repeat;
   display: table-cell;
   text-align:center;
 }
@@ -50,7 +50,7 @@
   color: white;
   width: 80px;
   height: 80px;
-  background:url(../images/button_red.png) no-repeat;
+  background:url(images/button_red.png) no-repeat;
   display: table-cell;
   text-align:center;
 }
@@ -61,7 +61,7 @@
   color: white;
   width: 80px;
   height: 80px;
-  background:url(../images/button_black.png) no-repeat;
+  background:url(images/button_black.png) no-repeat;
   display: table-cell;
   text-align:center;
 }

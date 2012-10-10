@@ -47,7 +47,7 @@ module Gmindapp
       role= get_option_xml("role", step1) || ""
   #    rule= get_option_xml("rule", step1) || true
       return true if role==""
-      user= get_user
+      user= current_user
       unless user
         return role.blank?
       else

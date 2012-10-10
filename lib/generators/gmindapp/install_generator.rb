@@ -6,7 +6,7 @@ module Gmindapp
         File.dirname(__FILE__) + "/templates"
       end
       def setup_gems
-        gem "nokogiri"
+        # gem "nokogiri"
         gem "mechanize"
         # gem "rmagick", :require => "RMagick", :platform => "ruby"
         gem "geokit"

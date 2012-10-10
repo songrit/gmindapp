@@ -16,7 +16,7 @@ namespace :gmindapp do
   
   desc "cancel all pending tasks"
   task :cancel=> :environment do
-    GmaXmain.update_all "status='X'", "status='I' or status='R'"
+    Gmindapp::Xmain.update_all "status='X'", "status='I' or status='R'"
   end
 end
 
@@ -168,7 +168,7 @@ end
           text1 = nnn.attributes['TEXT']
           next if text1 =~ /\#.*/ 
           k,v= text1.split(/:\s*/,2)
-          v ||= 'integer'
+          v ||= 'string'
           v= 'float' if v=~/double/i
           s << " #{name2code(k.strip)}:#{v.strip} "
           h << {:code=>name2code(k.strip), :type=>v.strip, :edit=>edit1, :text=>text1}
