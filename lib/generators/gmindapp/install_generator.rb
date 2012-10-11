@@ -21,7 +21,7 @@ module Gmindapp
         gem "mongoid"
         gem "redcarpet"
         # gem 'maruku'
-        gem 'wirble'
+        # gem 'wirble'
         gem 'therubyracer'
         gem 'bcrypt-ruby', '~> 3.0.0'
         gem 'omniauth-identity'
@@ -69,6 +69,7 @@ module Gmindapp
 DEFAULT_TITLE = 'GMINDAPP'
 DEFAULT_HEADER = 'GMINDAPP'
 GMAP = true
+NEXT = "Next >"
 }
         end
 

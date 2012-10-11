@@ -13,7 +13,7 @@
 /= javascript_include_tag "jquery.ui.widget"
 /= javascript_include_tag "jquery.ui.position"
 /= javascript_include_tag "jquery.ui.autocomplete"
-= javascript_include_tag "disable_enter_key"
+/= javascript_include_tag "disable_enter_key"
 /= stylesheet_link_tag "jquery.ui","jquery.ui.autocomplete"
 %p
 - user = current_user || User.new
@@ -27,11 +27,23 @@
   %div(data-role="fieldcontain")
     = render :inline=> @ui
   %p
-  = submit_tag @message
+  = submit_tag NEXT
 %p
 :javascript
   $(function() {
     //$('td input')[3].focus();
     $('.required').append('<span style="color:red"> *</span>');
     $('.refresh').append(" <img src='/images/refresh.png'/>");
-  })
+    // disable enter key
+    $("input").keypress(function (evt) {
+      //Deterime where our character code is coming from within the event
+      var charCode = evt.charCode || evt.keyCode;
+      if (charCode  == 13) { //Enter key's keycode
+        alert("กรุณาใช้เม้าส์คลิ้กที่ปุ่มเพื่อดำเนินการต่อ");
+        return false;
+      }
+    });
+  });
+  $( document ).bind( "pagechange", function(){
+    $('input[type="file"]').textinput({theme: 'c'});
+  });
