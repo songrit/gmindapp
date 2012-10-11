@@ -23,7 +23,4 @@
       %td= @runseq.name
       %td{:align=>'center'}= xmain.user.name
       %td= date_thai xmain.start
-      %td{:align=>'center'}= link_to image_tag("delete.png",                          |
-        :style=>'border:none; float:none;'),                                          |
-        {:controller=>'gmindapp', :action=>'cancel', :id=>xmain.id, :return=>url_for},  |
-        :confirm=>"confirm?"                                                          |
+      %td{:align=>'center'}= link_to image_tag("delete.png", :style=>'border:none; float:none;'), "#", :onclick=>"if (confirm('กรุณายืนยัน')) {location.hash='/gmindapp/cancel/#{xmain.id}'};"

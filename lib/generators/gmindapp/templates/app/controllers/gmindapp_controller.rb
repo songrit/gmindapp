@@ -10,6 +10,14 @@ class GmindappController < ApplicationController
     end
     render :layout => false 
   end
+  def cancel
+    Gmindapp::Xmain.find(params[:id]).update_attributes :status=>'X'
+    if params[:return]
+      redirect_to params[:return]
+    else
+      redirect_to "/gmindapp/pending"
+    end
+  end
   def init
     @service= Gmindapp::Service.where(:module_code=> params[:module], :code=> params[:service]).first
     if @service && authorize_init?
