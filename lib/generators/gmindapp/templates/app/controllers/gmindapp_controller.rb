@@ -56,7 +56,7 @@ class GmindappController < ApplicationController
           @f_help= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.redcloth"
           @ui= File.read(f)
           # $xvars[:full_layout]= !ajax?(@ui)
-          @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next &gt;"
+          @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next >"
           #      @message = "Done" if @runseq.form_step==@xvars[:total_form_steps]
         else
           flash[:notice]= "ไม่สามารถค้นหาบริการที่ต้องการได้"
