@@ -12,3 +12,5 @@
   %div{"data-role" => "content"}
     = yield
     /= handle_gma_notice
+:javascript
+  document.title= "#{@title}";
