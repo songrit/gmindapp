@@ -5,8 +5,7 @@ class GmindappController < ApplicationController
   end
   def index
     if login?
-      @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)
-      # @xmains= Gmindapp::Xmain.all.also_in(:status=>['R','I']).order("created_at")
+      @xmains= Gmindapp::Xmain.where(:status.in=>['I','R']).asc(:created_at)
     end
     render :layout => false 
   end
