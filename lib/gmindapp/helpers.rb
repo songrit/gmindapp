@@ -3,6 +3,19 @@ module Gmindapp
 
     # methods from application_controller
 
+    def redirect_to_root
+      redirect_to "/"
+    end
+    def get_option(opt, runseq=@runseq)
+      xml= REXML::Document.new(runseq.xml).root
+      url=''
+      xml.each_element('///node') do |n|
+        text= n.attributes['TEXT']
+        url= text if text =~/^#{opt}:\s*/
+      end
+      c, h= url.split(':', 2)
+      opt= h ? h.strip : false
+    end
     def gma_comment?(s)
       s[0]==35
     end
