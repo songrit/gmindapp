@@ -1,9 +1,7 @@
 # -*- encoding : utf-8 -*-
 class GmindappController < ApplicationController
   def pending
-    # @xmains= []
-    # @xmains= Gmindapp::Xmain.all :conditions=>"status='R' or status='I' ", :order=>"created_at", :include=>:runseqs
-    @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)
+    @xmains= Gmindapp::Xmain.where(:status.in=>['I','R']).asc(:created_at)
   end
   def index
     if login?
