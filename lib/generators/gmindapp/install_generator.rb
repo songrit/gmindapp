@@ -35,8 +35,8 @@ module Gmindapp
       
       def setup_routes
         route "root :to => 'gmindapp#index'"
-        # route "match 'gmindapp(/:action(/:id))(.:format)' => 'gmindapp'"
-        route "match 'gmindapp/init/:module/:service' => 'gmindapp#init'"
+        route "get '/gmindapp/init/:module/:service(/:id)' => 'gmindapp#init'"
+
         route "resources :identities"
         route "resources :sessions"
         route "match '/auth/:provider/callback' => 'sessions#create'"
