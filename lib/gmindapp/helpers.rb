@@ -3,6 +3,9 @@ module Gmindapp
 
     # methods from application_controller
 
+    def read_binary(path)
+      File.open path, "rb" do |f| f.read end
+    end
     def redirect_to_root
       redirect_to "/"
     end

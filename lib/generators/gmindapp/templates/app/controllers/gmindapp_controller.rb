@@ -185,10 +185,10 @@ class GmindappController < ApplicationController
   def get_image1(key, key1, params)
     # use mongo to store image
 #    upload = Upload.create :content=> params.read
-    doc = GmaDoc.create(
+    doc = Gmindapp::Doc.create(
       :name=> "#{key}_#{key1}",
-      :xmain=> @xmain.id,
-      :runseq=> @runseq.id,
+      :xmain=> @xmain,
+      :runseq=> @runseq,
       :filename=> params.original_filename,
       :content_type => params.content_type || 'application/zip',
 #      :data_text=> upload.id.to_s,
@@ -204,6 +204,37 @@ class GmindappController < ApplicationController
   end
   def doc_print
     render :file=>'public/doc.html', :layout=>'layouts/print'
+  end
+  def document
+    path = defined?(IMAGE_LOCATION) ? IMAGE_LOCATION : "tmp"
+    doc = Gmindapp::Doc.find params[:id]
+    if doc
+      # doc = GmaDoc.find params[:id]
+      if doc.secured
+        if current_user.secured? || doc.gma_user_id==session[:user_id]
+          view= true
+        else
+          view= false
+        end
+      else
+        view= true
+      end
+      if view
+        if %w(output temp).include?(doc.content_type)
+          render :text=>doc.data_text, :layout => false
+        else
+          data= read_binary("#{path}/f#{params[:id]}")
+          send_data(data, :filename=>doc.filename, :type=>doc.content_type, :disposition=>"inline")
+  #        send_data(Upload.find(doc.data_text).content.to_s, :filename=>doc.filename, :type=>doc.content_type, :disposition=>"inline")
+        end
+      else
+        gma_log "SEC: ไม่สามารถเรียกดูข้อมูลได้"
+        redirect_to "/"
+      end
+    else
+      data= read_binary("public/images/file_not_found.jpg")
+      send_data(data, :filename=>"img_not_found.png", :type=>"image/png", :disposition=>"inline")
+    end
   end
   def doc
     require 'rdoc'
