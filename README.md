@@ -38,6 +38,7 @@ uncomment gem therubyracer
 ระบุ gmindapp gem เข้าในไฟล์ Gemfile ของระบบงาน Ruby on Rails แล้วสั่ง `bundle` เพื่อติดตั้ง
 
 ```ruby
+gem "therubyracer", :platforms => :ruby
 gem "gmindapp"
 ```
 
