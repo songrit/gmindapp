@@ -290,13 +290,13 @@ module Gmindapp
       return s =~ /[n|no|f|false]/i ? true : false
     end
     
-    module FormBuilder
-      def date_field(method, options = {})
-        default= self.object.send(method) || Date.today
-        data_options= ({"mode"=>"calbox"}).merge(options)
-        %Q(<input name='#{self.object_name}[#{method}]' id='#{self.object_name}_#{method}' value='#{default.strftime("%F")}' type='date' data-role='datebox' data-options='#{data_options.to_json}'>).html_safe
-      end
-    end
+    # module FormBuilder
+    #   def date_field(method, options = {})
+    #     default= self.object.send(method) || Date.today
+    #     data_options= ({"mode"=>"calbox"}).merge(options)
+    #     %Q(<input name='#{self.object_name}[#{method}]' id='#{self.object_name}_#{method}' value='#{default.strftime("%F")}' type='date' data-role='datebox' data-options='#{data_options.to_json}'>).html_safe
+    #   end
+    # end
   end
 end
 
@@ -316,6 +316,13 @@ end
 
 module ActionView
   module Helpers
+    module DateHelper
+      def date_field_tag(method, options = {})
+        default= options[:default] || Date.today
+        data_options= ({"mode"=>"calbox"}).merge(options)
+        %Q(<input name='#{method}' id='#{method}' value='#{default.strftime("%F")}' type='date' data-role='datebox' data-options='#{data_options.to_json}'>).html_safe
+      end
+    end
     class FormBuilder
 #      def date_select_thai(method)
 #        self.date_select method, :use_month_names=>THAI_MONTHS, :order=>[:day, :month, :year]
@@ -341,11 +348,11 @@ module ActionView
 
       def point(o={})
         o[:zoom]= 11 unless o[:zoom]
-        o[:width]= '500px' unless o[:width]
+        o[:width]= '100%' unless o[:width]
         o[:height]= '300px' unless o[:height]
         if o[:lat].blank?
-          o[:lat] = 37.5
-          o[:lng] = -95
+          o[:lat] = 13.91819
+          o[:lng] = 100.48889
           o[:zoom] = 4
         end
 
@@ -356,7 +363,7 @@ module ActionView
     var map_#{self.object_name};
     var marker_#{self.object_name};
 
-    function initialize() {
+    function init_map() {
       var lat =  #{o[:lat]};
       var lng =  #{o[:lng]};
       //var lat =  position.coords.latitude"; // HTML5 pass position in function initialize(position)
@@ -385,7 +392,6 @@ module ActionView
       });
       $('##{self.object_name}_lat').val(lat);
       $('##{self.object_name}_lng').val(lng);
-
     };
 
 
@@ -395,26 +401,22 @@ module ActionView
       marker_#{self.object_name}.setPosition(latLng);
     }
 
-    google.maps.event.addDomListener(window, 'load', initialize);
-    //if (navigator.geolocation) {
-    // navigator.geolocation.getCurrentPosition(initialize);
-    //} else {
-    // google.maps.event.addDomListener(window, 'load', no_geo);
-    //}
-
+    google.maps.event.addDomListener(window, 'load', init_map);
 
   //]]>
   </script>
-  Latitude: #{self.text_field :lat, :style=>"width:100px;" }
-  Longitude: #{self.text_field :lng, :style=>"width:100px;" }
+  <div class="field">
+    Latitude: #{self.text_field :lat, :style=>"width:300px;" }
+    Longitude: #{self.text_field :lng, :style=>"width:300px;" }
+  </div>
   <p/>
-  <div id='map_#{self.object_name}' style='width:#{o[:width]}; height:#{o[:height]};'></div>
+  <div id='map_#{self.object_name}' style='width:#{o[:width]}; height:#{o[:height]};' class='map'></div>
   <script>
-    $('##{self.object_name}_lat').change(function() {move()})
-    $('##{self.object_name}_lng').change(function() {move()})
-    var w= $("input[id*=lat]").parent().width();
-    $("input[id*=lat]").css('width',w/4.5+'px')
-    $("input[id*=lng]").css('width',w/4.5+'px')
+    $('##{self.object_name}_lat').change(function() {move()});
+    $('##{self.object_name}_lng').change(function() {move()});
+    //var w= $("input[id*=lat]").parent().width();
+    //$("input[id*=lat]").css('width','300px');
+    //$("input[id*=lng]").css('width','300px');
   </script>
 EOT
         out.html_safe

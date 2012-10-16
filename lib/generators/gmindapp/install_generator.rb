@@ -22,7 +22,7 @@ module Gmindapp
         gem "redcarpet"
         # gem 'maruku'
         # gem 'wirble'
-        gem 'therubyracer'
+        # gem 'therubyracer'
         gem 'bcrypt-ruby', '~> 3.0.0'
         gem 'omniauth-identity'
         gem_group :development, :test do
@@ -114,20 +114,6 @@ end
       end
       def gen_user
         copy_file "seeds.rb","db/seeds.rb"
-
-        # identity = Identity.new
-        # identity.name = "admin"
-        # identity.email = "admin@test.com"
-        # identity.password = "secret"
-        # identity.password_confirmation = "secret"
-        # identity.save
-        # user= User.new
-        # user.provider = "identity"
-        # user.uid = identity.id.to_s
-        # user.name = identity.name
-        # user.email = identity.email
-        # user.role = "M,A,D"
-        # user.save
       end
     end
   end
