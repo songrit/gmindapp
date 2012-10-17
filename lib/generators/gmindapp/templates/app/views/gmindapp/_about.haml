@@ -7,16 +7,12 @@
     
     %h2 Requirements
     %ul
-      %li Rails 2.3.10
-      %li Rubygems 1.5.2
+      %li Rails 3.2
+      %li Rubygems 1.8.7
     %h2 Installation
     %ul
-      %li unzip this template and use it as a starting point for new Rails application
-      %li edit config/database.yml
-      %li edit public/index.mm
-      %li rake db:create
-      %li rake db:migrate
+      %li gem 'gmindapp'
+      %li bundle
+      %li rails generate gmindapp:install
       %li rake db:seed
-      %li start webrick server
-      %li access http://localhost:3000/gma/update_app
-      %li edit app/controllers and app/views
+      %li when update app/gmindapp/index.mm, run rake gmindapp:update

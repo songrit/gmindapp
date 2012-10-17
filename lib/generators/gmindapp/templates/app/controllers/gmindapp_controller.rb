@@ -202,9 +202,6 @@ class GmindappController < ApplicationController
     eval "@xvars[@runseq.code][key][key1] = '#{url_for(:action=>'document', :id=>doc.id, :only_path => true)}' "
     # eval "@xvars[:#{@runseq.code}][:#{doc.name}_doc_id] = #{doc.id} "
   end
-  def doc_print
-    render :file=>'public/doc.html', :layout=>'layouts/print'
-  end
   def document
     path = defined?(IMAGE_LOCATION) ? IMAGE_LOCATION : "tmp"
     doc = Gmindapp::Doc.find params[:id]
@@ -236,33 +233,50 @@ class GmindappController < ApplicationController
       send_data(data, :filename=>"img_not_found.png", :type=>"image/png", :disposition=>"inline")
     end
   end
+
+  # old doc using maruku
+  # def doc
+  #   require 'rdoc'
+  #   @app= get_app
+  #   @name = 'ระบบงานสินเชื่อติดตั้งแก๊ซใช้ในรถยนต์'
+  #   @intro = File.read('README.md')
+  #   @print= "<div align='right'><img src='/assets/printer.png'/> <a href='/gmindapp/doc_print' target='_blank'/>พิมพ์</a></div>"
+  #   doc= render_to_string 'doc.md', :layout => false
+  #   html= Maruku.new(doc).to_html
+  #   File.open('public/doc.html','w') {|f| f.puts html }
+  #   respond_to do |format|
+  #     format.html { 
+  #       render :text=> @print+html, :layout => 'layouts/_page'
+  #       # render :text=> Maruku.new(doc).to_html, :layout => false
+  #     # format.html { 
+  #     #   h = RDoc::Markup::ToHtml.new
+  #     #   render :text=> h.convert(doc), :layout => 'layouts/_page' 
+  #     }
+  #     format.pdf  { 
+  #       latex= Maruku.new(doc).to_latex
+  #       File.open('tmp/doc.md','w') {|f| f.puts doc}
+  #       File.open('tmp/doc.tex','w') {|f| f.puts latex}
+  #       # system('pdflatex tmp/doc.tex ')
+  #       # send_file( 'tmp/doc.pdf', :type => ‘application/pdf’,
+  #         # :disposition => ‘inline’, :filename => 'doc.pdf')
+  #       render :text=>'done'
+  #     }
+  #   end
+  # end
   def doc
-    require 'rdoc'
     @app= get_app
-    @name = 'ระบบงานสินเชื่อติดตั้งแก๊ซใช้ในรถยนต์'
-    @intro = File.read('README.md')
-    @print= "<div align='right'><img src='/assets/printer.png'/> <a href='/gmindapp/doc_print' target='_blank'/>พิมพ์</a></div>"
-    doc= render_to_string 'doc.md', :layout => false
-    html= Maruku.new(doc).to_html
+    process_services
+    @print= "<div align='right'><a href='http://daringfireball.net/projects/markdown/syntax' target='_blank'>markdown</a> <img src='/assets/printer.png'/> <a href='/gmindapp/doc_print' target='_blank'/>พิมพ์</a></div>"
+    doc= render_to_string :file=> 'gmindapp/doc.md', :layout => false
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML,
+        :autolink => true, :space_after_headers => true)
+    html= markdown.render(doc)
     File.open('public/doc.html','w') {|f| f.puts html }
-    respond_to do |format|
-      format.html { 
-        render :text=> @print+html, :layout => 'layouts/_page'
-        # render :text=> Maruku.new(doc).to_html, :layout => false
-      # format.html { 
-      #   h = RDoc::Markup::ToHtml.new
-      #   render :text=> h.convert(doc), :layout => 'layouts/_page' 
-      }
-      format.pdf  { 
-        latex= Maruku.new(doc).to_latex
-        File.open('tmp/doc.md','w') {|f| f.puts doc}
-        File.open('tmp/doc.tex','w') {|f| f.puts latex}
-        # system('pdflatex tmp/doc.tex ')
-        # send_file( 'tmp/doc.pdf', :type => ‘application/pdf’,
-          # :disposition => ‘inline’, :filename => 'doc.pdf')
-        render :text=>'done'
-      }
-    end
+    # render :text=> @print+html, :layout => "layouts/_page"
+    render :text=> @print+html, :layout=>true
+  end
+  def doc_print
+    render :file=>'public/doc.html', :layout=>'layouts/print'
   end
   def status
     @xmain= GmaXmain.find params[:id]

@@ -1,58 +1,37 @@
-CSS: style.css
-Use numbered headers: true
-HTML use syntax: true
-LaTeX use listings: true
-LaTeX CJK: false
-LaTeX preamble: preamble.tex
-
 <style>code { font-size: 0.8em;}</style>
 
+<%= File.read('README.md') %>
 
-{:ruby:     lang=ruby code_background_color='#efffef'}
-{:shell:    lang=sh code_background_color='#efefff'}
-{:markdown: code_background_color='#ffefef'}
-{:html:     lang=xml}
+***
 
-สารบัญ
-=====
+# คู่มือการใช้งาน
 
-* This list will contain the toc (it doesn't matter what you write here)
-{:toc}
+<%= render :partial=>'gmindapp/modul.md', :collection=> Gmindapp::Module.all.asc(:seq) %>
 
-* * *
+***
 
-<%= @name %>
-============
-<%= @intro %>
+# คู่มือผู้ดูแลระบบ
 
-* * *
-
-คู่มือการใช้งาน
-===========
-* ระบบงานย่อย 1
-  * งาน 1 ; หน้าจอ, หน้าจอ, หน้าจอ
-  * งาน 2
-* ระบบงานย่อย 2
-* ระบบงานย่อย 3
-
-* * *
-คู่มือผู้ดูแลระบบ
-===========
-โครงสร้างข้อมูล
-------------
+## โครงสร้างข้อมูล
 
 <%- models= @app.elements["//node[@TEXT='models']"] %>
 
-<%= render :partial=>'gmindapp/model.md', :collection=> models.map {|m| m.attributes["TEXT"]} %>
+<%= render :partial=>'gmindapp/model.md', :collection=> models.map {|m| m.attributes["TEXT"] } %>
 
-source code
------------
+***
 
-ภาคผนวก
-=======
+# ภาคผนวก
 
-markdown
---------
-คู่มือนี้จัดทำขึ้นโดยอัตโนมัติจาก mind map และรหัสโปรแกรม ผู้พัฒนาสามารถเขียนวิธีการใช้งานได้อย่างอิสระ
-โดยใช้คำสั่ง markdown ในการเขียนคู่มือประกอบเข้ากับส่วนต่างๆของระบบงาน รายละเอียดคำสั่งต่างๆของ markdown 
-สามารถดูได้จาก [http://maruku.rubyforge.org/markdown_syntax.html](http://maruku.rubyforge.org/markdown_syntax.html)
+## markdown
+
+คู่มือนี้จัดทำขึ้นโดยอัตโนมัติจาก mind map และส่วนต่างๆ ของรหัสโปรแกรม 
+ผู้เกี่ยวข้องสามารถเขียนวิธีการใช้งานได้อย่างอิสระ โดยใช้คำสั่ง
+<a href="http://daringfireball.net/projects/markdown/syntax" target="_blank">markdown</a>
+ในการเขียนคู่มือประกอบเข้ากับส่วนต่างๆของระบบงาน ดังต่อไปนี้
+
+* คำอธิบายระบบในภาพรวม อยู่ในไฟล์ `README.md`
+* คำอธิบายระบบงาน อยู่ในไฟล์ `app/controllers/<ระบบงาน>.md`
+* คำอธิบายงาน อยู่ในไฟล์ `app/views/<ระบบงาน>/<งาน>.md`
+* คำอธิบายงานของ link สร้างเป็นกิ่งลูกต่อจาก link นั้น
+* คำอธิบายขั้นตอน อยู่ในไฟล์ `app/views/<ระบบงาน>/<งาน>/<ขั้นตอน>.md`
+* ตัวอย่างหน้าจอ อยู่ในไฟล์ `app/views/<ระบบงาน>/<งาน>/<ขั้นตอน>.png`

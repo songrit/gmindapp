@@ -2,7 +2,6 @@ module Gmindapp
   module Helpers
 
     # methods from application_controller
-
     def read_binary(path)
       File.open path, "rb" do |f| f.read end
     end
@@ -76,6 +75,12 @@ module Gmindapp
     end
 
     # methods from application_helper
+    def uncomment(s)
+      s.sub(/^#\s/,'')
+    end
+    def code_div(s)
+      "<pre style='background-color: #efffef;'><code class='ruby' lang='ruby'>    #{s}</code></pre>".html_safe
+    end
     def ajax?(s)
       return s.match('file_field') ? false : true
     end
@@ -95,7 +100,7 @@ module Gmindapp
       out.html_safe
     end
 
-    # old methods, don't know where they came from
+    # methods that I don't know where they came from
     def current_user
       if session[:user_id]
         return @user ||= User.find(session[:user_id])
