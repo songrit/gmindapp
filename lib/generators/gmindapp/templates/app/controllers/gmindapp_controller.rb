@@ -333,7 +333,7 @@ class GmindappController < ApplicationController
       :xvars=> {
         :service_id=>service.id, :p=>params,
         :id=>params[:id],
-        :user_id=>current_user.id, :custom_controller=>custom_controller,
+        :user_id=>current_user.try(:id), :custom_controller=>custom_controller,
         :host=>request.host,
         :referer=>request.env['HTTP_REFERER'] }
   end
@@ -396,7 +396,7 @@ class GmindappController < ApplicationController
       @runseq.save
     end
     $xmain= @xmain; $xvars= @xvars
-    $runseq_id= @runseq.id; $user_id= current_user.id
+    $runseq_id= @runseq.id; $user_id= current_user.try(:id)
   end
   def init_vars_by_runseq(runseq_id)
     @runseq= Gmindapp::Runseq.find runseq_id

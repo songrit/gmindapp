@@ -355,11 +355,8 @@ module ActionView
         o[:zoom]= 11 unless o[:zoom]
         o[:width]= '100%' unless o[:width]
         o[:height]= '300px' unless o[:height]
-        if o[:lat].blank?
-          o[:lat] = 13.91819
-          o[:lng] = 100.48889
-          o[:zoom] = 4
-        end
+        o[:lat] = 13.91819 unless o[:lat]
+        o[:lng] = 100.48889 unless o[:lng]
 
         out = <<-EOT
   <script type='text/javascript'>
