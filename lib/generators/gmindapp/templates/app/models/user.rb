@@ -2,7 +2,7 @@ class User
   include Mongoid::Document
   field :provider, :type => String
   field :uid, :type => String
-  field :name, :type => String
+  field :code, :type => String
   field :email, :type => String
   field :role, :type => String
   
@@ -11,11 +11,12 @@ class User
   end
   
   def self.create_with_omniauth(auth)
+    identity = Identity.find auth.uid
     create! do |user|
       user.provider = auth.provider
       user.uid = auth.uid
-      user.name = auth.info.name
-      user.email = auth.info.email
+      user.code = identity.code
+      user.email = identity.email
       user.role = "M"
     end
   end

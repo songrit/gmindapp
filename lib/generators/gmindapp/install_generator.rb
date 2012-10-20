@@ -95,8 +95,10 @@ NEXT = "Next >"
         initializer "omniauth.rb" do
 %q{
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :identity, :on_failed_registration=> lambda { |env|
-    IdentitiesController.action(:new).call(env)
+  provider :identity,
+    :fields => [:code, :email],
+    :on_failed_registration=> lambda { |env|
+      IdentitiesController.action(:new).call(env)
   }
 end
 }

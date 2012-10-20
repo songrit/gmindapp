@@ -125,7 +125,7 @@ class GmindappController < ApplicationController
           :ip=> get_ip, :service=>service, :display=>display,
           :secured => @xmain.service.secured
       end
-      @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next &gt;"
+      @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next >"
       @message = "สิ้นสุดการทำงาน" if @runseq.end
       eval "@xvars[@runseq.code] = url_for(:controller=>'gmindapp', :action=>'document', :id=>@doc.id)"
     else
