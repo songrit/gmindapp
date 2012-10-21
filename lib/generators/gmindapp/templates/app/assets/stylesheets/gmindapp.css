@@ -1,3 +1,6 @@
+.map { 
+  margin-bottom: 1em; 
+}
 .map img {
     max-width: none !important;
 }

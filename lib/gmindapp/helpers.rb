@@ -351,7 +351,7 @@ module ActionView
         datetime_select method, :default => default, :use_month_names=>THAI_MONTHS, :order=>[:day, :month, :year], :disabled=>disabled
       end
 
-      def point(o={})
+      def point(method, o={})
         o[:zoom]= 11 unless o[:zoom]
         o[:width]= '100%' unless o[:width]
         o[:height]= '300px' unless o[:height]
@@ -407,12 +407,12 @@ module ActionView
 
   //]]>
   </script>
-  <div class="field">
+  <div class="field" data-role="fieldcontain">
     Latitude: #{self.text_field :lat, :style=>"width:300px;" }
     Longitude: #{self.text_field :lng, :style=>"width:300px;" }
   </div>
   <p/>
-  <div id='map_#{self.object_name}' style='width:#{o[:width]}; height:#{o[:height]};' class='map'></div>
+  <div id='map_#{self.object_name}' style='max-width: none !important; width:#{o[:width]}; height:#{o[:height]};' class='map'></div>
   <script>
     $('##{self.object_name}_lat').change(function() {move()});
     $('##{self.object_name}_lng').change(function() {move()});
