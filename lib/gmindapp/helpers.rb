@@ -351,7 +351,7 @@ module ActionView
         datetime_select method, :default => default, :use_month_names=>THAI_MONTHS, :order=>[:day, :month, :year], :disabled=>disabled
       end
 
-      def point(method, o={})
+      def point(o={})
         o[:zoom]= 11 unless o[:zoom]
         o[:width]= '100%' unless o[:width]
         o[:height]= '300px' unless o[:height]
