@@ -1,21 +1,16 @@
 # -*- encoding : utf-8 -*-
 class GmindappController < ApplicationController
   def pending
-    @xmains= Gmindapp::Xmain.where(:status.in=>['I','R']).asc(:created_at)
+    # @xmains= []
+    # @xmains= Gmindapp::Xmain.all :conditions=>"status='R' or status='I' ", :order=>"created_at", :include=>:runseqs
+    @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)
   end
   def index
     if login?
-      @xmains= Gmindapp::Xmain.where(:status.in=>['I','R']).asc(:created_at)
+      @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)
+      # @xmains= Gmindapp::Xmain.all.also_in(:status=>['R','I']).order("created_at")
     end
     render :layout => false 
-  end
-  def cancel
-    Gmindapp::Xmain.find(params[:id]).update_attributes :status=>'X'
-    if params[:return]
-      redirect_to params[:return]
-    else
-      redirect_to "/gmindapp/pending"
-    end
   end
   def init
     @service= Gmindapp::Service.where(:module_code=> params[:module], :code=> params[:service]).first
@@ -34,8 +29,8 @@ class GmindappController < ApplicationController
       redirect_to :action=>'run', :id=>xmain.id
     else
       flash[:notice]= "ขออภัย ไม่สามารถทำงานได้"
-      gma_log "ขออภัย ไม่สามารถทำงานได้"
-      # gma_log("SECURITY", "unauthorize access: #{params.inspect}")
+      gma_notice "ขออภัย ไม่สามารถทำงานได้"
+      gma_log("SECURITY", "unauthorize access: #{params.inspect}")
       redirect_to_root
     end
   end
@@ -54,7 +49,7 @@ class GmindappController < ApplicationController
       if ['F', 'X'].include? @xmain.status
         redirect_to_root
       else
-        @title= "รหัสดำเนินการ #{@xmain.id}: #{@xmain.name} / #{@runseq.name}"
+        @title= "รหัสดำเนินการ #{@xmain.xid}: #{@xmain.name} / #{@runseq.name}"
         service= @xmain.service
         if service
           f= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.html.erb"
@@ -78,8 +73,6 @@ class GmindappController < ApplicationController
     set_global
     controller = Kernel.const_get(@xvars['custom_controller']).new
     result = controller.send(@runseq.code)
-    @xmain.xvars= $xvars
-    @xmain.save
     init_vars_by_runseq($runseq_id)
     @xvars = $xvars
     @xvars[@runseq.code.to_sym]= result.to_s
@@ -125,7 +118,7 @@ class GmindappController < ApplicationController
           :ip=> get_ip, :service=>service, :display=>display,
           :secured => @xmain.service.secured
       end
-      @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next >"
+      @message = defined?(MSG_NEXT) ? MSG_NEXT : "Next &gt;"
       @message = "สิ้นสุดการทำงาน" if @runseq.end
       eval "@xvars[@runseq.code] = url_for(:controller=>'gmindapp', :action=>'document', :id=>@doc.id)"
     else
@@ -185,10 +178,10 @@ class GmindappController < ApplicationController
   def get_image1(key, key1, params)
     # use mongo to store image
 #    upload = Upload.create :content=> params.read
-    doc = Gmindapp::Doc.create(
+    doc = GmaDoc.create(
       :name=> "#{key}_#{key1}",
-      :xmain=> @xmain,
-      :runseq=> @runseq,
+      :xmain=> @xmain.id,
+      :runseq=> @runseq.id,
       :filename=> params.original_filename,
       :content_type => params.content_type || 'application/zip',
 #      :data_text=> upload.id.to_s,
@@ -202,81 +195,36 @@ class GmindappController < ApplicationController
     eval "@xvars[@runseq.code][key][key1] = '#{url_for(:action=>'document', :id=>doc.id, :only_path => true)}' "
     # eval "@xvars[:#{@runseq.code}][:#{doc.name}_doc_id] = #{doc.id} "
   end
-  def document
-    path = defined?(IMAGE_LOCATION) ? IMAGE_LOCATION : "tmp"
-    doc = Gmindapp::Doc.find params[:id]
-    if doc
-      # doc = GmaDoc.find params[:id]
-      if doc.secured
-        if current_user.secured? || doc.gma_user_id==session[:user_id]
-          view= true
-        else
-          view= false
-        end
-      else
-        view= true
-      end
-      if view
-        if %w(output temp).include?(doc.content_type)
-          render :text=>doc.data_text, :layout => false
-        else
-          data= read_binary("#{path}/f#{params[:id]}")
-          send_data(data, :filename=>doc.filename, :type=>doc.content_type, :disposition=>"inline")
-  #        send_data(Upload.find(doc.data_text).content.to_s, :filename=>doc.filename, :type=>doc.content_type, :disposition=>"inline")
-        end
-      else
-        gma_log "SEC: ไม่สามารถเรียกดูข้อมูลได้"
-        redirect_to "/"
-      end
-    else
-      data= read_binary("public/images/file_not_found.jpg")
-      send_data(data, :filename=>"img_not_found.png", :type=>"image/png", :disposition=>"inline")
-    end
-  end
-
-  # old doc using maruku
-  # def doc
-  #   require 'rdoc'
-  #   @app= get_app
-  #   @name = 'ระบบงานสินเชื่อติดตั้งแก๊ซใช้ในรถยนต์'
-  #   @intro = File.read('README.md')
-  #   @print= "<div align='right'><img src='/assets/printer.png'/> <a href='/gmindapp/doc_print' target='_blank'/>พิมพ์</a></div>"
-  #   doc= render_to_string 'doc.md', :layout => false
-  #   html= Maruku.new(doc).to_html
-  #   File.open('public/doc.html','w') {|f| f.puts html }
-  #   respond_to do |format|
-  #     format.html { 
-  #       render :text=> @print+html, :layout => 'layouts/_page'
-  #       # render :text=> Maruku.new(doc).to_html, :layout => false
-  #     # format.html { 
-  #     #   h = RDoc::Markup::ToHtml.new
-  #     #   render :text=> h.convert(doc), :layout => 'layouts/_page' 
-  #     }
-  #     format.pdf  { 
-  #       latex= Maruku.new(doc).to_latex
-  #       File.open('tmp/doc.md','w') {|f| f.puts doc}
-  #       File.open('tmp/doc.tex','w') {|f| f.puts latex}
-  #       # system('pdflatex tmp/doc.tex ')
-  #       # send_file( 'tmp/doc.pdf', :type => ‘application/pdf’,
-  #         # :disposition => ‘inline’, :filename => 'doc.pdf')
-  #       render :text=>'done'
-  #     }
-  #   end
-  # end
-  def doc
-    @app= get_app
-    process_services
-    @print= "<div align='right'><a href='http://daringfireball.net/projects/markdown/syntax' target='_blank'>markdown</a> <img src='/assets/printer.png'/> <a href='/gmindapp/doc_print' target='_blank'/>พิมพ์</a></div>"
-    doc= render_to_string :file=> 'gmindapp/doc.md', :layout => false
-    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML,
-        :autolink => true, :space_after_headers => true)
-    html= markdown.render(doc)
-    File.open('public/doc.html','w') {|f| f.puts html }
-    # render :text=> @print+html, :layout => "layouts/_page"
-    render :text=> @print+html, :layout=>true
-  end
   def doc_print
     render :file=>'public/doc.html', :layout=>'layouts/print'
+  end
+  def doc
+    require 'rdoc'
+    @app= get_app
+    @name = 'ระบบงานสินเชื่อติดตั้งแก๊ซใช้ในรถยนต์'
+    @intro = File.read('README.md')
+    @print= "<div align='right'><img src='/assets/printer.png'/> <a href='/gmindapp/doc_print' target='_blank'/>พิมพ์</a></div>"
+    doc= render_to_string 'doc.md', :layout => false
+    html= Maruku.new(doc).to_html
+    File.open('public/doc.html','w') {|f| f.puts html }
+    respond_to do |format|
+      format.html { 
+        render :text=> @print+html, :layout => 'layouts/_page'
+        # render :text=> Maruku.new(doc).to_html, :layout => false
+      # format.html { 
+      #   h = RDoc::Markup::ToHtml.new
+      #   render :text=> h.convert(doc), :layout => 'layouts/_page' 
+      }
+      format.pdf  { 
+        latex= Maruku.new(doc).to_latex
+        File.open('tmp/doc.md','w') {|f| f.puts doc}
+        File.open('tmp/doc.tex','w') {|f| f.puts latex}
+        # system('pdflatex tmp/doc.tex ')
+        # send_file( 'tmp/doc.pdf', :type => ‘application/pdf’,
+          # :disposition => ‘inline’, :filename => 'doc.pdf')
+        render :text=>'done'
+      }
+    end
   end
   def status
     @xmain= GmaXmain.find params[:id]
@@ -333,7 +281,7 @@ class GmindappController < ApplicationController
       :xvars=> {
         :service_id=>service.id, :p=>params,
         :id=>params[:id],
-        :user_id=>current_user.try(:id), :custom_controller=>custom_controller,
+        :user_id=>current_user.id, :custom_controller=>custom_controller,
         :host=>request.host,
         :referer=>request.env['HTTP_REFERER'] }
   end
@@ -396,7 +344,7 @@ class GmindappController < ApplicationController
       @runseq.save
     end
     $xmain= @xmain; $xvars= @xvars
-    $runseq_id= @runseq.id; $user_id= current_user.try(:id)
+    $runseq_id= @runseq.id; $user_id= current_user.id
   end
   def init_vars_by_runseq(runseq_id)
     @runseq= Gmindapp::Runseq.find runseq_id
@@ -407,6 +355,31 @@ class GmindappController < ApplicationController
     @runseq.status= 'R' # running
     @runseq.save
   end
+  # def end_action(next_runseq = nil)
+  #   #    @runseq.status='F' unless @runseq_not_f
+  #   @xmain.xvars= @xvars
+  #   @xmain.status= 'R' # running
+  #   @xmain.save
+  #   @runseq.status='F'
+  #   @runseq.gma_user_id= session[:user_id]
+  #   @runseq.stop= Time.now
+  #   @runseq.save
+  #   next_runseq= @xmain.gma_runseqs.find_by_rstep @runseq.rstep+1 unless next_runseq
+  #   if @end_job || !next_runseq # job finish
+  #     @xmain.xvars= @xvars
+  #     @xmain.status= 'F' unless @xmain.status== 'E' # finish
+  #     @xmain.stop= Time.now
+  #     @xmain.save
+  #     if @xvars['p']['return']
+  #       redirect_to @xvars['p']['return'] and return
+  #     else
+  #       redirect_to_root and return
+  #     end
+  #   else
+  #     @xmain.update_attribute :current_runseq, next_runseq.id
+  #     redirect_to :action=>'run', :id=>@xmain.id and return
+  #   end
+  # end
   def end_action(next_runseq = nil)
     #    @runseq.status='F' unless @runseq_not_f
     @xmain.xvars= @xvars
@@ -416,7 +389,7 @@ class GmindappController < ApplicationController
     @runseq.user= current_user
     @runseq.stop= Time.now
     @runseq.save
-    next_runseq= @xmain.runseqs.where(:rstep=>@runseq.rstep+1).first unless next_runseq
+    next_runseq= @xmain.runseqs.where(:rstep=> @runseq.rstep+1).first unless next_runseq
     if @end_job || !next_runseq # job finish
       @xmain.xvars= @xvars
       @xmain.status= 'F' unless @xmain.status== 'E' # finish
@@ -425,13 +398,16 @@ class GmindappController < ApplicationController
       if @xvars['p']['return']
         redirect_to @xvars['p']['return'] and return
       else
-        redirect_to_root and return
+        redirect_to :action=>'pending' and return
       end
     else
       @xmain.update_attribute :current_runseq, next_runseq.id
       redirect_to :action=>'run', :id=>@xmain.id and return
     end
   end
+  # def about
+  #   render :layout => false 
+  # end
   def store_asset
     if params[:content]
       doc = GmaDoc.create! :name=> 'asset',
