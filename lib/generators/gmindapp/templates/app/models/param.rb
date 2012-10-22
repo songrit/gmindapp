@@ -21,6 +21,9 @@ class Param
   end
   def self.gen(code)
     p= where(:code=> code).first
+    unless p
+      p= self.create! :code => code, :pid => '0', :yearly => false, :description => 'auto'
+    end
     if p.yearly
       num, year = p.pid.split('/')
       y_now = (Time.now.year.to_i) -1957
