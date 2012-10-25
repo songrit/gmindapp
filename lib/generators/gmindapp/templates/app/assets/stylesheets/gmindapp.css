@@ -28,11 +28,6 @@
   font-weight: bolder;
   padding-left: 10px;
 }
-#user {
-   color:#2381D2;
-   text-align:right;
-   font-weight: bolder;
-}
 .step {
   /*display: table-row;*/
   margin-top: 20px;

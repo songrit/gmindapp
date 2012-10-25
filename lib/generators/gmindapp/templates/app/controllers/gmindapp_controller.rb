@@ -1,9 +1,13 @@
 # -*- encoding : utf-8 -*-
 class GmindappController < ApplicationController
+  def index
+    if login?
+      @xmains = Gmindapp::Xmain.where(:status =>{'$in'=>['R','I']}).asc(:created_at)
+    end
+    render :layout => false 
+  end
   def pending
-    # @xmains= []
-    # @xmains= Gmindapp::Xmain.all :conditions=>"status='R' or status='I' ", :order=>"created_at", :include=>:runseqs
-    @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)
+    @xmains = Gmindapp::Xmain.where(:status =>{'$in'=>['R','I']}).asc(:created_at)
   end
   def cancel
     Gmindapp::Xmain.find(params[:id]).update_attributes :status=>'X'
@@ -12,13 +16,6 @@ class GmindappController < ApplicationController
     else
       redirect_to action:"pending"
     end
-  end
-  def index
-    if login?
-      @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)
-      # @xmains= Gmindapp::Xmain.all.also_in(:status=>['R','I']).order("created_at")
-    end
-    render :layout => false 
   end
   def init
     @service= Gmindapp::Service.where(:module_code=> params[:module], :code=> params[:service]).first
@@ -72,6 +69,38 @@ class GmindappController < ApplicationController
     else
       redirect_to_root
     end
+  end
+  def run_if
+    init_vars(params[:id])
+    condition= eval(@runseq.code).to_s
+    match_found= false
+    if condition
+      xml= REXML::Document.new(@runseq.xml).root
+      next_runseq= nil
+      text = xml.elements['//node/node'].attributes['TEXT']
+      match, name= text.split(':',2)
+      label= name2code(name.strip)
+      if condition==match
+        if label=="end"
+          @end_job= true
+        else
+          next_runseq= @xmain.runseqs.where(:code=> label, :action.ne=>'redirect').first
+          match_found= true if next_runseq
+          @runseq_not_f= false
+        end
+      end
+    end
+    unless match_found || @end_job
+      next_runseq= @xmain.runseqs.where( rstep:(@xvars['current_step']+1) ).first
+    end
+    end_action(next_runseq)
+  end
+  def run_redirect
+    init_vars(params[:id])
+    # next_runseq= @xmain.runseqs.first :conditions=>["id != ? AND code = ?",@runseq.id, @runseq.code]
+    next_runseq= @xmain.runseqs.where(:id.ne=>@runseq.id, :code=>@runseq.code).first
+    @xmain.current_runseq= next_runseq.id
+    end_action(next_runseq)
   end
   def run_do
     init_vars(params[:id])

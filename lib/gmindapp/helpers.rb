@@ -51,10 +51,11 @@ module Gmindapp
       return true if true_action?(@runseq.action)
       # return false if check_wait
       return true if @runseq.role.blank?
-      if @runseq.role
+      unless @runseq.role.empty?
         return false unless @user.role
         return @user.role.upcase.split(',').include?(@runseq.role.upcase)
       end
+      return true
     end
     def authorize_init? # use when initialize new transaction
       xml= @service.xml
