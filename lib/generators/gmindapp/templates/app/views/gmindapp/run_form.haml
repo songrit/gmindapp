@@ -42,13 +42,13 @@
       }
     });
   });
+  $( document ).bind( "pagechange", function(){
+    $('input[type="file"]').textinput({theme: 'c'});
+  });
 
 - if GMAP
   :javascript
     init_map();
-    $( document ).bind( "pagechange", function(){
-      $('input[type="file"]').textinput({theme: 'c'});
-    });
     $( document ).one( "pagechange", function(){
       init_map();
     });

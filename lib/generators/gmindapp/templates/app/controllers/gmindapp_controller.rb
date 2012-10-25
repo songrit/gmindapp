@@ -126,12 +126,7 @@ class GmindappController < ApplicationController
     @runseq.status= 'F' #finish
     @runseq.stop= Time.now
     @runseq.save
-    gma_log "ขออภัย เกิดข้อผิดพลาดในรหัสการดำเนินงาน #{@xmain.id}"
-    # flash[:notice]= "Sorry, there was some problem processing your request."
-#    flash[:notice]= "ERROR: Job Abort xmain #{@xmain.id} runseq #{@runseq.id}<br/>#{xml_text e}<hr/>"
-    # gma_log("ERROR", "Job Abort xmain #{@xmain.id} runseq #{@runseq.id}<br/>#{xml_text e}<hr/>")
-#    end_action(nil)
-#    end_action
+    gma_log ERB::Util.html_escape("ขออภัย เกิดข้อผิดพลาดในรหัสการดำเนินงาน #{@xmain.id} #{@xvars['error']}")
     redirect_to_root
   end
   def run_output
