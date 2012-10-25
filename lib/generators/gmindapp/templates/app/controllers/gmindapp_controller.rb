@@ -5,6 +5,14 @@ class GmindappController < ApplicationController
     # @xmains= Gmindapp::Xmain.all :conditions=>"status='R' or status='I' ", :order=>"created_at", :include=>:runseqs
     @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)
   end
+  def cancel
+    Gmindapp::Xmain.find(params[:id]).update_attributes :status=>'X'
+    if params[:return]
+      redirect_to params[:return]
+    else
+      redirect_to action:"pending"
+    end
+  end
   def index
     if login?
       @xmains= Gmindapp::Xmain.where(status:'R').union.where(status:'I').asc(:created_at)

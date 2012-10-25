@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 class Gmindapp::Xmain
   include Mongoid::Document
+  field :xid, :type => String
   # gmindapp begin
   include Mongoid::Timestamps
   belongs_to :service, :class_name => "Gmindapp::Service"
@@ -15,12 +16,16 @@ class Gmindapp::Xmain
   # gmindapp end
 
   has_many :runseqs, :class_name => "Gmindapp::Runseq"
-
+  before_create :assign_xid
+  
   # has_many :gma_runseqs, :order=>"rstep"
   # has_many :comments, :order=>"created_at"
   # has_many :gma_docs, :order=>"created_at"
 
   # number of xmains on the specified date
+  def assign_xid
+    self.xid = Param.gen(:xid)  
+  end
   def self.number(d)
     all(:conditions=>['DATE(created_at) =?', d.to_date]).count
   end
