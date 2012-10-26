@@ -25,6 +25,7 @@ module Gmindapp
         # gem 'therubyracer'
         gem 'bcrypt-ruby', '~> 3.0.0'
         gem 'omniauth-identity'
+        gem 'cloudinary'
         gem_group :development, :test do
           # gem "ruby-debug"
           gem "debugger"
@@ -66,10 +67,14 @@ module Gmindapp
         end
         initializer "gmindapp.rb" do
 %q{
+# encoding: utf-8
+
 DEFAULT_TITLE = 'GMINDAPP'
 DEFAULT_HEADER = 'GMINDAPP'
 GMAP = true
 NEXT = "Next >"
+# unset IMAGE_LOCATION to use cloudinary
+# IMAGE_LOCATION = "public/upload"
 }
         end
 
@@ -116,6 +121,9 @@ end
       end
       def gen_user
         copy_file "seeds.rb","db/seeds.rb"
+      end
+      def gen_sample_cloudinary
+        copy_file "cloudinary.yml","config/cloudinary.yml"
       end
     end
   end

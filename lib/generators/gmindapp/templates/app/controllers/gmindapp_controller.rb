@@ -187,45 +187,46 @@ class GmindappController < ApplicationController
   end
   # process images from first level
   def get_image(key, params)
-    # use mongo to store image
-#    upload = Upload.create :content=> params.read
-    doc = Gmindapp::Doc.create(
-      :name=> key.to_s,
-      :xmain=> @xmain.id,
-      :runseq=> @runseq.id,
-      :filename=> params.original_filename,
-      :content_type => params.content_type || 'application/zip',
- #     :data_text=> upload.id.to_s,
-      :data_text=> '',
-      :display=>true,
-      :secured => @xmain.service.secured )
-    path = defined?(IMAGE_LOCATION) ? IMAGE_LOCATION : "tmp"
-    File.open("#{path}/f#{doc.id}","wb") { |f|
-      f.puts(params.read)
-    }
-    eval "@xvars[@runseq.code][key] = '#{url_for(:action=>'document', :id=>doc.id, :only_path => true )}' "
-    # eval "@xvars[:#{@runseq.code}][:#{key}_doc_id] = #{doc.id} "
+      doc = Gmindapp::Doc.create(
+        :name=> key.to_s,
+        :xmain=> @xmain.id,
+        :runseq=> @runseq.id,
+        :filename=> params.original_filename,
+        :content_type => params.content_type || 'application/zip',
+        :data_text=> '',
+        :display=>true,
+        :secured => @xmain.service.secured )
+    if defined?(IMAGE_LOCATION)
+      file_name = "#{IMAGE_LOCATION}/f#{Param.gen(:asset_id)}"
+      File.open(file_name,"wb") { |f| f.puts(params.read) }
+      eval "@xvars[@runseq.code][key] = '#{url_for(:action=>'document', :id=>doc.id, :only_path => true )}' "
+      doc.update_attributes :url => filename, :basename => File.basename(filename), :cloudinary => false
+    else
+      result = Cloudinary::Uploader.upload(params)
+      eval %Q{ @xvars[@runseq.code][key] = '#{result["url"]}' }
+      doc.update_attributes :url => result["url"], :basename => File.basename(result["url"]), :cloudinary => true
+    end
   end
   # process images from second level, e.g,, fields_for
   def get_image1(key, key1, params)
-    # use mongo to store image
-#    upload = Upload.create :content=> params.read
-    doc = GmaDoc.create(
+    doc = Gmindapp::Doc.create(
       :name=> "#{key}_#{key1}",
       :xmain=> @xmain.id,
       :runseq=> @runseq.id,
       :filename=> params.original_filename,
       :content_type => params.content_type || 'application/zip',
-#      :data_text=> upload.id.to_s,
       :data_text=> '',
       :display=>true, :secured => @xmain.service.secured )
-    path = defined?(IMAGE_LOCATION) ? IMAGE_LOCATION : "tmp"
-    File.open("#{path}/f#{doc.id}","wb") { |f|
-       f.puts(params.read)
-   }
-
-    eval "@xvars[@runseq.code][key][key1] = '#{url_for(:action=>'document', :id=>doc.id, :only_path => true)}' "
-    # eval "@xvars[:#{@runseq.code}][:#{doc.name}_doc_id] = #{doc.id} "
+    if defined?(IMAGE_LOCATION)
+      file_name = "#{IMAGE_LOCATION}/f#{Param.gen(:asset_id)}"
+      File.open(file_name,"wb") { |f| f.puts(params.read) }
+      eval "@xvars[@runseq.code][key][key1] = '#{url_for(:action=>'document', :id=>doc.id, :only_path => true)}' "
+      doc.update_attributes :url => filename, :basename => File.basename(filename), :cloudinary => false
+    else
+      result = Cloudinary::Uploader.upload(params)
+      eval %Q{ @xvars[@runseq.code][key][key1] = '#{result["url"]}' }
+      doc.update_attributes :url => result["url"], :basename => File.basename(result["url"]), :cloudinary => true
+    end
   end
   def doc_print
     render :file=>'public/doc.html', :layout=>'layouts/print'

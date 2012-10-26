@@ -5,6 +5,9 @@ class Gmindapp::Doc
   field :filename, :type => String
   field :content_type, :type => String
   field :data_text, :type => String
+  field :url, :type => String
+  field :basename, :type => String
+  field :cloudinary, :type => Boolean
   belongs_to :xmain, :class_name => "Gmindapp::Xmain"
   belongs_to :runseq, :class_name => "Gmindapp::Runseq"
   belongs_to :user
