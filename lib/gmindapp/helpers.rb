@@ -307,9 +307,9 @@ module Gmindapp
 end
 
 # hack to fix cloudinary error https://github.com/archiloque/rest-client/issues/141
-class Hash
-  remove_method :read
-end
+# class Hash
+#   remove_method :read
+# end
 
 class String
   def comment?
@@ -402,14 +402,13 @@ module ActionView
       $('##{self.object_name}_lng').val(lng);
     };
 
-
     function move() {
       latLng = new google.maps.LatLng($('##{self.object_name}_lat').val(), $('##{self.object_name}_lng').val());
       map_#{self.object_name}.panTo(latLng);
       marker_#{self.object_name}.setPosition(latLng);
     }
 
-    google.maps.event.addDomListener(window, 'load', init_map);
+    //google.maps.event.addDomListener(window, 'load', init_map);
 
   //]]>
   </script>
@@ -425,6 +424,9 @@ module ActionView
     //var w= $("input[id*=lat]").parent().width();
     //$("input[id*=lat]").css('width','300px');
     //$("input[id*=lng]").css('width','300px');
+    $( document ).one( "pagechange", function(){
+      init_map();
+    });
   </script>
 EOT
         out.html_safe
