@@ -306,11 +306,6 @@ module Gmindapp
   end
 end
 
-# hack to fix cloudinary error https://github.com/archiloque/rest-client/issues/141
-# class Hash
-#   remove_method :read
-# end
-
 class String
   def comment?
     self[0]==35 # check if first char is #
