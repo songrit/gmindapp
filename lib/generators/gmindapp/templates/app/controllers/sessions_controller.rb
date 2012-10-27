@@ -17,7 +17,8 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:user_id] = nil
-    redirect_to '/gmindapp/help'
+    # redirect_to '/gmindapp/help'
+    refresh_to root_path
   end
 
   def failure

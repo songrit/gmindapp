@@ -17,6 +17,10 @@ class GmindappController < ApplicationController
       redirect_to action:"pending"
     end
   end
+  def clear_xmains
+      Gmindapp::Xmain.where(:status =>{'$in'=>['R','I']}).update_all(:status=>'X')
+      redirect_to action:"pending"
+  end
   def init
     @service= Gmindapp::Service.where(:module_code=> params[:module], :code=> params[:service]).first
     if @service && authorize_init?
