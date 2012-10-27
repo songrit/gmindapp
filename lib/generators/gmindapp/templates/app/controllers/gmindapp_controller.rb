@@ -126,8 +126,7 @@ class GmindappController < ApplicationController
     @runseq.status= 'F' #finish
     @runseq.stop= Time.now
     @runseq.save
-    gma_log ERB::Util.html_escape("ขออภัย เกิดข้อผิดพลาดในรหัสการดำเนินงาน #{@xmain.id} #{@xvars['error']}")
-    redirect_to_root
+    refresh_to "/", :alert => "ขออภัย เกิดข้อผิดพลาดในรหัสการดำเนินงาน #{@xmain.id} #{@xvars['error']}"
   end
   def run_output
     init_vars(params[:id])
@@ -260,17 +259,15 @@ class GmindappController < ApplicationController
     end
   end
   def status
-    @xmain= GmaXmain.find params[:id]
-    @title= "Task number #{params[:id]} #{@xmain.name}"
+    @xmain= Gmindapp::Xmain.where(:xid=>params[:xid]).first
+    @title= "Task number #{params[:xid]} #{@xmain.name}"
     @backbtn= true
     @xvars= @xmain.xvars
     # flash.now[:notice]= "รายการ #{@xmain.id} ได้ถูกยกเลิกแล้ว" if @xmain.status=='X'
     gma_notice "Task #{@xmain.id} is cancelled" if @xmain.status=='X'
     # flash.now[:notice]= "transaction #{@xmain.id} was cancelled" if @xmain.status=='X'
   rescue
-    # flash[:notice]= "ขออภัย ไม่สามารถค้นหางานเลขที่ <b> #{params[:id]} </b>"
-    gma_notice "Could not find task number <b> #{params[:id]} </b>"
-    redirect_to_root
+    refresh_to "/", :alert => "Could not find task number <b> #{params[:xid]} </b>"
   end
   def help
   end

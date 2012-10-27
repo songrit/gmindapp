@@ -5,7 +5,7 @@
     %th starter
     %th begin
     %th end
-  - @xmain.gma_runseqs.form_action.each do |r|
+  - @xmain.runseqs.form_action.each do |r|
     %tr
       - if @xmain.status=='X'
         %td{:align=>'center'}= image_tag 'cancel.png'
@@ -47,7 +47,7 @@
     %th ชื่อไฟล์
     %th ผู้ดำเนินการ
     %th วันที่
-  - @xmain.gma_docs.each do |doc|
+  - @xmain.docs.each do |doc|
     - next unless doc.display
     %tr
       %td

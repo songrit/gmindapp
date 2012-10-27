@@ -16,13 +16,14 @@ class Gmindapp::Xmain
   # gmindapp end
 
   has_many :runseqs, :class_name => "Gmindapp::Runseq"
+  has_many :docs, :class_name => "Gmindapp::Doc"
   before_create :assign_xid
   
-  # has_many :gma_runseqs, :order=>"rstep"
-  # has_many :comments, :order=>"created_at"
-  # has_many :gma_docs, :order=>"created_at"
 
   # number of xmains on the specified date
+  def self.get(xid)
+    where(xid:xid).first
+  end
   def assign_xid
     self.xid = Param.gen(:xid)  
   end

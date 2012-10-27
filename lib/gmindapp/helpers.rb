@@ -2,11 +2,17 @@ module Gmindapp
   module Helpers
 
     # methods from application_controller
+    def refresh_to(url='/', option={})
+      if option[:alert]
+        gma_log option[:alert]
+      end
+      render :text => "<script>window.location.replace('#{url}')</script>" 
+    end
     def read_binary(path)
       File.open path, "rb" do |f| f.read end
     end
     def redirect_to_root
-      redirect_to "/"
+      redirect_to root_path
     end
     def get_option(opt, runseq=@runseq)
       xml= REXML::Document.new(runseq.xml).root
@@ -72,10 +78,30 @@ module Gmindapp
       end
     end
     def gma_log(message)
-      Gmindapp::Notice.create :message => message, :unread=> true
+      Gmindapp::Notice.create :message => ERB::Util.html_escape(message), :unread=> true
     end
 
     # methods from application_helper
+    def status_icon(runseq)
+      case runseq.status
+      when 'R'
+        image_tag 'user.png'
+      when 'F'
+        image_tag 'tick.png'
+      when 'I'
+        image_tag 'control_play.png'
+      when 'E'
+        image_tag 'logout.png'
+      when 'X'
+        image_tag 'cross.png'
+      else
+        image_tag 'cancel.png'
+      end
+    end
+    def role_name(code)
+      role= Gmindapp::Role.where(code:code).first
+      return role ? role.name : ""
+    end
     def uncomment(s)
       s.sub(/^#\s/,'')
     end
