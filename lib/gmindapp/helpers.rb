@@ -82,6 +82,9 @@ module Gmindapp
     end
 
     # methods from application_helper
+    def align_text(s, pixel=3)
+      "<span style='position:relative; top:-#{pixel}px;'>#{s}</span>".html_safe
+    end
     def status_icon(runseq)
       case runseq.status
       when 'R'

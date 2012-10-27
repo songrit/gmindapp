@@ -2,12 +2,12 @@
 class GmindappController < ApplicationController
   def index
     if login?
-      @xmains = Gmindapp::Xmain.where(:status =>{'$in'=>['R','I']}).asc(:created_at)
+      @xmains = Gmindapp::Xmain.in(status:['R','I']).asc(:created_at)
     end
     render :layout => false 
   end
   def pending
-    @xmains = Gmindapp::Xmain.where(:status =>{'$in'=>['R','I']}).asc(:created_at)
+    @xmains = Gmindapp::Xmain.in(status:['R','I']).asc(:created_at)
   end
   def cancel
     Gmindapp::Xmain.find(params[:id]).update_attributes :status=>'X'
