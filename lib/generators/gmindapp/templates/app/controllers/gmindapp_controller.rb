@@ -188,6 +188,31 @@ class GmindappController < ApplicationController
     }
     end_action
   end
+  def end_action(next_runseq = nil)
+    #    @runseq.status='F' unless @runseq_not_f
+    @xmain.xvars= @xvars
+    @xmain.status= 'R' # running
+    @xmain.save
+    @runseq.status='F'
+    @runseq.user= current_user
+    @runseq.stop= Time.now
+    @runseq.save
+    next_runseq= @xmain.runseqs.where(:rstep=> @runseq.rstep+1).first unless next_runseq
+    if @end_job || !next_runseq # job finish
+      @xmain.xvars= @xvars
+      @xmain.status= 'F' unless @xmain.status== 'E' # finish
+      @xmain.stop= Time.now
+      @xmain.save
+      if @xvars['p']['return']
+        redirect_to @xvars['p']['return'] and return
+      else
+        redirect_to :action=>'pending' and return
+      end
+    else
+      @xmain.update_attribute :current_runseq, next_runseq.id
+      redirect_to :action=>'run', :id=>@xmain.id and return
+    end
+  end
   # process images from first level
   def get_image(key, params)
       doc = Gmindapp::Doc.create(
@@ -414,31 +439,6 @@ class GmindappController < ApplicationController
   #     redirect_to :action=>'run', :id=>@xmain.id and return
   #   end
   # end
-  def end_action(next_runseq = nil)
-    #    @runseq.status='F' unless @runseq_not_f
-    @xmain.xvars= @xvars
-    @xmain.status= 'R' # running
-    @xmain.save
-    @runseq.status='F'
-    @runseq.user= current_user
-    @runseq.stop= Time.now
-    @runseq.save
-    next_runseq= @xmain.runseqs.where(:rstep=> @runseq.rstep+1).first unless next_runseq
-    if @end_job || !next_runseq # job finish
-      @xmain.xvars= @xvars
-      @xmain.status= 'F' unless @xmain.status== 'E' # finish
-      @xmain.stop= Time.now
-      @xmain.save
-      if @xvars['p']['return']
-        redirect_to @xvars['p']['return'] and return
-      else
-        redirect_to :action=>'pending' and return
-      end
-    else
-      @xmain.update_attribute :current_runseq, next_runseq.id
-      redirect_to :action=>'run', :id=>@xmain.id and return
-    end
-  end
   # def about
   #   render :layout => false 
   # end
