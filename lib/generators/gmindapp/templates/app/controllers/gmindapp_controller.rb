@@ -1,10 +1,6 @@
 # -*- encoding : utf-8 -*-
 class GmindappController < ApplicationController
   def index
-    if login?
-      @xmains = Gmindapp::Xmain.in(status:['R','I']).asc(:created_at)
-    end
-    render :layout => false 
   end
   def pending
     @xmains = Gmindapp::Xmain.in(status:['R','I']).asc(:created_at)

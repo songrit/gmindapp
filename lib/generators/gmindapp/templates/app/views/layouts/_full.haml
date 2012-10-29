@@ -23,7 +23,6 @@
         %div{"data-role" => "content"}
           = yield
 
-      = render :partial => "gmindapp/about"
       = render :partial => "gmindapp/static"
 
 :javascript
@@ -34,4 +33,4 @@
     };
   });
 
-= handle_gma_notice
+= raw handle_gma_notice

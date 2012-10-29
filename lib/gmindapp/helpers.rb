@@ -261,7 +261,7 @@ module Gmindapp
     end
     def own_xmain?
       if $xvars
-        return current_user.id==$xvars[:user_id]
+        return $user.id==$xvars['user_id']
       else
         return true
       end
