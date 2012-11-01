@@ -263,6 +263,7 @@ module Gmindapp
       if $xvars
         return $user.id==$xvars['user_id']
       else
+        # if eval on first step would return true so user can start service
         return true
       end
     end
