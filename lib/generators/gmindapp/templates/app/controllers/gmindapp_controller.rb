@@ -54,9 +54,12 @@ class GmindappController < ApplicationController
       if ['F', 'X'].include? @xmain.status
         redirect_to_root
       else
-        @title= "รหัสดำเนินการ #{@xmain.xid}: #{@xmain.name} / #{@runseq.name}"
         service= @xmain.service
         if service
+          @title= "รหัสดำเนินการ #{@xmain.xid}: #{@xmain.name} / #{@runseq.name}"
+          @markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :autolink => true, :space_after_headers => true)
+          fhelp= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.md"
+          @help = File.read(fhelp) if File.exists?(fhelp)
           f= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.html.erb"
           @f_help= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.redcloth"
           @ui= File.read(f)
