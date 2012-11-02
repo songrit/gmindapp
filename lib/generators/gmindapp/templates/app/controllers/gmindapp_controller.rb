@@ -57,11 +57,9 @@ class GmindappController < ApplicationController
         service= @xmain.service
         if service
           @title= "รหัสดำเนินการ #{@xmain.xid}: #{@xmain.name} / #{@runseq.name}"
-          @markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :autolink => true, :space_after_headers => true)
           fhelp= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.md"
           @help = File.read(fhelp) if File.exists?(fhelp)
           f= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.html.erb"
-          @f_help= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.redcloth"
           @ui= File.read(f)
         else
           flash[:notice]= "ไม่สามารถค้นหาบริการที่ต้องการได้"

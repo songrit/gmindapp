@@ -82,6 +82,11 @@ module Gmindapp
     end
 
     # methods from application_helper
+    def markdown(text)
+      erbified = ERB.new(text.html_safe).result(binding)
+      red = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :autolink => true, :space_after_headers => true)
+      red.render(erbified).html_safe
+    end
     def align_text(s, pixel=3)
       "<span style='position:relative; top:-#{pixel}px;'>#{s}</span>".html_safe
     end

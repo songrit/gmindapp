@@ -1,11 +1,5 @@
 .head
   = step(@runseq.form_step, @xvars['total_form_steps'])
-- if File.exists?(@f_help)
-  %span(style='float:right;padding-right: 20px;')
-    = link_to "วิธีกรอกแบบ", {:controller=>"engine", :action=>"help", :f=>@f_help}, :target=>"_blank"
-    &nbsp;
-%script
-  function validate() { return true; }
 %p
 - user = current_user || User.new
 - form_class = 'formtastic'
@@ -13,7 +7,7 @@
 - if @help
   %div(data-role="collapsible" data-theme="e" data-content-theme="c" data-mini="true")
     %h3 ตำแนะนำ
-    %p= raw @markdown.render(@help)
+    %p= markdown(@help)
 = form_tag({ :action => next_step } , {:multipart => true, :onSubmit=>'return validate()', :class=>form_class, "data-ajax"=>"#{ajax?(@ui)}"}) do
   = hidden_field_tag 'xmain_id', @xmain.id
   = hidden_field_tag 'ajax', ajax?(@ui)
