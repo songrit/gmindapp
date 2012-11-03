@@ -63,6 +63,17 @@ module Gmindapp
     g.test_framework  :rspec 
     g.integration_tool :rspec
   end
+  # gmail config
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    :address              => "smtp.gmail.com",
+    :port                 => 587,
+    :user_name            => 'user@gmail.com',
+    :password             => 'secret',
+    :authentication       => 'plain',
+    :enable_starttls_auto => true  }
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.perform_deliveries = true
 }
         end
         initializer "gmindapp.rb" do
@@ -75,6 +86,8 @@ GMAP = true
 NEXT = "Next >"
 # unset IMAGE_LOCATION to use cloudinary
 # IMAGE_LOCATION = "public/upload"
+# for debugging
+# DONT_SEND_MAIL = true
 }
         end
 
@@ -91,11 +104,6 @@ NEXT = "Next >"
         inject_into_file 'config/mongoid.yml', :after => '  # raise_not_found_error: true' do
           "\n  raise_not_found_error: false"
         end
-      end
-      
-      def setup_mail
-        copy_file "mail.rb","config/initializers/mail.rb"
-        copy_file "lib/smtp_tls.rb","lib/smtp_tls.rb"
       end
       
       def setup_omniauth

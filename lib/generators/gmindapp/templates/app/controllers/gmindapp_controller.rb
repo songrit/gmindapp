@@ -163,6 +163,23 @@ class GmindappController < ApplicationController
       end_action
     end
   end
+  def run_mail
+    init_vars(params[:id])
+    service= @xmain.service
+    f= "app/views/#{service.module.code}/#{service.code}/#{@runseq.code}.html.erb"
+    @ui= File.read(f).html_safe
+    @doc= Gmindapp::Doc.create :name=> @runseq.name,
+      :content_type=>"mail", :data_text=> render_to_string(:inline=>@ui, :layout=>false),
+      :xmain=>@xmain, :runseq=>@runseq, :user=>current_user,
+      :ip=> get_ip, :service=>service, :display=>false,
+      :secured => @xmain.service.secured
+    eval "@xvars[:#{@runseq.code}] = url_for(:controller=>'gmindapp', :action=>'document', :id=>@doc.id)"
+    sender= render_to_string(:inline=>get_option('from'))
+    recipients= render_to_string(:inline=>get_option('to'))
+    subject= render_to_string(:inline=>get_option('subject')) || "#{@runseq.name}"
+    GmindappMailer.gmail(@doc.data_text, recipients, subject, sender).deliver unless defined?(DONT_SEND_MAIL)
+    end_action
+  end
   def end_output
     init_vars(params[:xmain_id])
     end_action
