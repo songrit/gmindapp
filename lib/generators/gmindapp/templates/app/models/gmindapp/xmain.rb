@@ -22,7 +22,7 @@ class Gmindapp::Xmain
 
   # number of xmains on the specified date
   def self.get(xid)
-    where(xid:xid).first
+    find_by(xid:xid)
   end
   def assign_xid
     self.xid = Param.gen(:xid)  

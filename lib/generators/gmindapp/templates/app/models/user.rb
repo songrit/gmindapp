@@ -6,10 +6,12 @@ class User
   field :email, :type => String
   field :role, :type => String
   
+  def has_role(role1)
+    return role.upcase.split(',').include?(role1.upcase)
+  end
   def self.from_omniauth(auth)
     where(:provider=> auth["provider"], :uid=> auth["uid"]).first || create_with_omniauth(auth)
   end
-  
   def self.create_with_omniauth(auth)
     identity = Identity.find auth.uid
     create! do |user|
@@ -20,7 +22,6 @@ class User
       user.role = "M"
     end
   end
-
   def secured?
     role.upcase.split(',').include?(SECURED_ROLE)
   end

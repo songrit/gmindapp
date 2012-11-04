@@ -33,10 +33,7 @@ class GmindappController < ApplicationController
       xmain.runseqs.last.update_attribute(:end,true)
       redirect_to :action=>'run', :id=>xmain.id
     else
-      flash[:notice]= "ขออภัย ไม่สามารถทำงานได้"
-      gma_notice "ขออภัย ไม่สามารถทำงานได้"
-      gma_log("SECURITY", "unauthorize access: #{params.inspect}")
-      redirect_to_root
+      refresh_to "/", :alert => "ขออภัย ไม่สามารถทำงานได้"
     end
   end
   def run
@@ -431,34 +428,6 @@ class GmindappController < ApplicationController
     @runseq.status= 'R' # running
     @runseq.save
   end
-  # def end_action(next_runseq = nil)
-  #   #    @runseq.status='F' unless @runseq_not_f
-  #   @xmain.xvars= @xvars
-  #   @xmain.status= 'R' # running
-  #   @xmain.save
-  #   @runseq.status='F'
-  #   @runseq.gma_user_id= session[:user_id]
-  #   @runseq.stop= Time.now
-  #   @runseq.save
-  #   next_runseq= @xmain.gma_runseqs.find_by_rstep @runseq.rstep+1 unless next_runseq
-  #   if @end_job || !next_runseq # job finish
-  #     @xmain.xvars= @xvars
-  #     @xmain.status= 'F' unless @xmain.status== 'E' # finish
-  #     @xmain.stop= Time.now
-  #     @xmain.save
-  #     if @xvars['p']['return']
-  #       redirect_to @xvars['p']['return'] and return
-  #     else
-  #       redirect_to_root and return
-  #     end
-  #   else
-  #     @xmain.update_attribute :current_runseq, next_runseq.id
-  #     redirect_to :action=>'run', :id=>@xmain.id and return
-  #   end
-  # end
-  # def about
-  #   render :layout => false 
-  # end
   def store_asset
     if params[:content]
       doc = GmaDoc.create! :name=> 'asset',

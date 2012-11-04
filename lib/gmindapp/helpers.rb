@@ -64,17 +64,22 @@ module Gmindapp
       return true
     end
     def authorize_init? # use when initialize new transaction
+      # check module role
+      mrole = @service.module.role
+      return false if mrole && !current_user
+      return false if mrole && !current_user.has_role(mrole)
+
+      # check step 1 role
       xml= @service.xml
       step1 = REXML::Document.new(xml).root.elements['node']
       role= get_option_xml("role", step1) || ""
   #    rule= get_option_xml("rule", step1) || true
       return true if role==""
-      user= current_user
-      unless user
+      unless current_user
         return role.blank?
       else
-        return false unless user.role
-        return user.role.upcase.split(',').include?(role.upcase)
+        return false unless current_user.role
+        return current_user.has_role(role)
       end
     end
     def gma_log(message)
