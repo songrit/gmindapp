@@ -172,12 +172,12 @@ class GmindappController < ApplicationController
       :secured => @xmain.service.secured
     eval "@xvars[:#{@runseq.code}] = url_for(:controller=>'gmindapp', :action=>'document', :id=>@doc.id)"
     mail_from = get_option('from')
-    sender= render_to_string(:inline=>mail_from) if mail_from
+    # sender= render_to_string(:inline=>mail_from) if mail_from
     mail_to = get_option('to')
     recipients= render_to_string(:inline=>mail_to) if mail_to
     mail_subject = get_option('subject')
     subject= render_to_string(:inline=>mail_subject) || "#{@runseq.name}"
-    GmindappMailer.gmail(@doc.data_text, recipients, subject, sender).deliver unless defined?(DONT_SEND_MAIL)
+    GmindappMailer.gmail(@doc.data_text, recipients, subject).deliver unless DONT_SEND_MAIL
     end_action
   end
   def end_output
