@@ -11,6 +11,6 @@
     %h1= @title || DEFAULT_TITLE
   %div{"data-role" => "content"}
     = yield
-    /= handle_gma_notice
+
 :javascript
   document.title= "#{@title}";

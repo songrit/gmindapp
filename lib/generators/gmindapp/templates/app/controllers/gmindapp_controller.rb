@@ -17,6 +17,16 @@ class GmindappController < ApplicationController
       Gmindapp::Xmain.where(:status =>{'$in'=>['R','I']}).update_all(:status=>'X')
       redirect_to action:"pending"
   end
+  def ajax_notice
+    if Gmindapp::Notice.recent.count>0
+      notice= Gmindapp::Notice.recent.last
+      notice.update_attribute :unread, false
+      js = "notice('#{notice.message}');"
+    else
+      js = ""
+    end
+    render :text=> "<script>#{js}</script>"
+  end
   def init
     @service= Gmindapp::Service.where(:module_code=> params[:module], :code=> params[:service]).first
     if @service && authorize_init?

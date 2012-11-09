@@ -32,5 +32,8 @@
       page.remove();
     };
   });
+  $( document ).on( "pagechange", function(){
+    $.get("/gmindapp/ajax_notice", function(r) {$(r).appendTo('head').remove()});
+  });
 
-= raw handle_gma_notice
+/= raw handle_gma_notice

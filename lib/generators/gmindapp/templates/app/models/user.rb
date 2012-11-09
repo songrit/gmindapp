@@ -5,6 +5,7 @@ class User
   field :code, :type => String
   field :email, :type => String
   field :role, :type => String
+  belongs_to :identity
   
   def has_role(role1)
     return role.upcase.split(',').include?(role1.upcase)
