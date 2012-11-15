@@ -5,6 +5,7 @@ class Gmindapp::Notice
   field :unread, :type => Boolean
   belongs_to :user
   
-  # scope :new, :where=>{:unread=>true}
-  scope :recent, where(unread: true)
+  def self.recent(user_id)
+    where(unread: true, user_id: user_id).last
+  end
 end

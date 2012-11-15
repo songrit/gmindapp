@@ -83,7 +83,8 @@ module Gmindapp
       end
     end
     def gma_log(message)
-      Gmindapp::Notice.create :message => ERB::Util.html_escape(message.gsub("`","'")), :unread=> true
+      Gmindapp::Notice.create :message => ERB::Util.html_escape(message.gsub("`","'")), 
+        :user_id => $user.id, :unread=> true
     end
 
     # methods from application_helper

@@ -18,8 +18,7 @@ class GmindappController < ApplicationController
       redirect_to action:"pending"
   end
   def ajax_notice
-    if Gmindapp::Notice.recent.count>0
-      notice= Gmindapp::Notice.recent.last
+    if notice=Gmindapp::Notice.recent(current_user)
       notice.update_attribute :unread, false
       js = "notice('#{notice.message}');"
     else
