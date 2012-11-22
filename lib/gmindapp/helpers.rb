@@ -152,15 +152,15 @@ module Gmindapp
     def ui_action?(s)
       %w(form output mail pdf).include? s
     end
-    def handle_gma_notice
-      if Gmindapp::Notice.recent.count>0
-        notice= Gmindapp::Notice.recent.last
-        notice.update_attribute :unread, false
-        "<script>notice('#{notice.message}');</script>"
-      else
-        ""
-      end
-    end
+    # def handle_gma_notice
+    #   if Gmindapp::Notice.recent.count>0
+    #     notice= Gmindapp::Notice.recent.last
+    #     notice.update_attribute :unread, false
+    #     "<script>notice('#{notice.message}');</script>"
+    #   else
+    #     ""
+    #   end
+    # end
     def process_services
       # todo: persist mm_md5
       xml= @app||get_app
