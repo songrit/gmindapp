@@ -33,11 +33,11 @@ module Gmindapp
           gem "rspec-rails"
         end
       end
-      
+
       def setup_routes
         route "root :to => 'gmindapp#index'"
-        route "match '/gmindapp/init/:module/:service(/:id)' => 'gmindapp#init'"
-        
+        # route "match '/gmindapp/init/:module/:service(/:id)' => 'gmindapp#init'"
+
         route "resources :identities"
         route "resources :sessions"
         route "match '/auth/:provider/callback' => 'sessions#create'"
@@ -57,10 +57,10 @@ module Gmindapp
         application do
 %q{
   # gmindapp default
-  config.generators do |g| 
-    g.orm             :mongoid 
+  config.generators do |g|
+    g.orm             :mongoid
     g.template_engine :haml
-    g.test_framework  :rspec 
+    g.test_framework  :rspec
     g.integration_tool :rspec
   end
   # gmail config
@@ -105,7 +105,7 @@ NEXT = "Next >"
           "\n  raise_not_found_error: false"
         end
       end
-      
+
       def setup_omniauth
         # gem 'bcrypt-ruby', '~> 3.0.0'
         # gem 'omniauth-identity'
@@ -121,7 +121,7 @@ end
 }
         end
       end
-      
+
       def setup_app
         inside("public") { run "mv index.html index.html.bak" }
         inside("app/controllers") { run "mv application_controller.rb application_controller.rb.bak" }

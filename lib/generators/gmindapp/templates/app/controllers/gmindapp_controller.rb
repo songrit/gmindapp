@@ -3,14 +3,14 @@ class GmindappController < ApplicationController
   def index
   end
   def pending
-    @xmains = Gmindapp::Xmain.in(status:['R','I']).asc(:created_at)
+    @xmains = current_user.xmains.in(status:['R','I']).asc(:created_at)
   end
   def cancel
     Gmindapp::Xmain.find(params[:id]).update_attributes :status=>'X'
     if params[:return]
       redirect_to params[:return]
     else
-      redirect_to action:"pending"
+      redirect_to action:"/member"
     end
   end
   def clear_xmains
@@ -27,7 +27,8 @@ class GmindappController < ApplicationController
     render :text=> "<script>#{js}</script>"
   end
   def init
-    @service= Gmindapp::Service.where(:module_code=> params[:module], :code=> params[:service]).first
+    module_code, code = params[:s].split(":")
+    @service= Gmindapp::Service.where(:module_code=> module_code, :code=> code).first
     if @service && authorize_init?
       xmain = create_xmain(@service)
       result = create_runseq(xmain)

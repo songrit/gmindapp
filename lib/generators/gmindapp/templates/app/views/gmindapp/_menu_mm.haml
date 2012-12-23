@@ -17,11 +17,11 @@
           - next unless current_user.role
           - next unless current_user.role.upcase.split(',').include?(s.role.upcase)
         - if s.code.downcase=="link"
-          - name, url = s.name.split(":", 2)
+          - name, url = s.name.split(":")
           - url.strip!
         - else
-          - name= s.name
-          - url= "/gmindapp/init/#{s.module_code}/#{s.code}"
+          - name= s.name; url= "/gmindapp/init?s=#{s.module_code}:#{s.code}"
+          / - name= s.name; url= "/gmindapp/init/#{s.module_code}/#{s.code}"
         - if s.confirm
           %li
             %a{"data-panel"=>"main", :onclick=>"if (confirm('กรุณายืนยัน')) {location.hash='#{url}'};"}= name
